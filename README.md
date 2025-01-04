@@ -1,0 +1,2 @@
+# GrindMeter
+ A study timer
