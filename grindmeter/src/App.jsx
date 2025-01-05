@@ -1,22 +1,21 @@
-import { useState } from "react";
-import Timer from "./Timer";
+import { createBroswerRouter, Route } from "react-router-dom";
 import "./App.css";
 
-function App() {
-  const [isOn, setIsOn] = useState(false);
-  const time = 3660;
+// Pages
+import Home from "./pages/Home";
+import Settings from "./pages/Settings";
 
-  function handleClick() {
-    setIsOn((prev) => (prev ? false : true));
-  }
-  return (
-    <div>
-      <h2>
-        <Timer duration={time} isRunning={isOn} />
-      </h2>
-      <button onClick={handleClick}>Stop/Go</button>
-    </div>
-  );
+const router = createBroswerRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route index element={<Home />} />
+      <Route index element={<Settings />} />
+    </Route>
+  )
+);
+
+function App() {
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
 export default App;
