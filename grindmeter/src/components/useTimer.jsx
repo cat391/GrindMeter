@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 
-export default function useTimer(startingSeconds, isRunning) {
+export default function useTimer(startingSeconds, isRunning, reset) {
   const [time, setTime] = useState(startingSeconds);
+
+  useEffect(() => {
+    setTime(startingSeconds);
+    console.log("ran");
+  }, [startingSeconds, reset]);
 
   useEffect(() => {
     if (!isRunning) return;
@@ -14,10 +19,6 @@ export default function useTimer(startingSeconds, isRunning) {
       clearInterval(intervalId);
     };
   }, [isRunning]);
-
-  useEffect(() => {
-    setTime(startingSeconds);
-  }, [startingSeconds]);
 
   return {
     hours: Math.floor((time / (60 * 60)) % 24),

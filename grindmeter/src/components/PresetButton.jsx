@@ -4,8 +4,6 @@ export default function PresetButton({ presets, onClick, id }) {
     let minutes = Math.floor((org / 60) % 60);
     let seconds = Math.floor(org % 60);
 
-    console.log(hours, minutes, seconds);
-
     return `${hours != 0 ? String(hours) + ":" : ""}${String(minutes).padStart(
       2,
       "0"

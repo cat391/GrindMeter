@@ -1,7 +1,7 @@
 import useTimer from "./useTimer";
 
-export default function Timer({ duration, isRunning }) {
-  const { hours, minutes, seconds } = useTimer(duration, isRunning);
+export default function Timer({ duration, isRunning, reset }) {
+  const { hours, minutes, seconds } = useTimer(duration, isRunning, reset);
 
   return (
     <div>
