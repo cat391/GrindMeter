@@ -4,16 +4,20 @@ export default function useTimer(startingSeconds, isRunning) {
   const [time, setTime] = useState(startingSeconds);
 
   useEffect(() => {
+    if (!isRunning) return;
+
     const intervalId = setInterval(() => {
-      if (isRunning) {
-        setTime((prev) => (prev > 0 ? prev - 1 : 0));
-      }
+      setTime((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [isRunning]);
+
+  useEffect(() => {
+    setTime(startingSeconds);
+  }, [startingSeconds]);
 
   return {
     hours: Math.floor((time / (60 * 60)) % 24),
