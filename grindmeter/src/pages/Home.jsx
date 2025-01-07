@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
+import "../App.css";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
@@ -24,18 +25,24 @@ export default function Home() {
       <h2>
         <Timer duration={displayedTime} isRunning={isOn} reset={shouldReset} />
       </h2>
-      <button onClick={toggleTimer}>Stop/Go</button>
-      <button onClick={resetTimer}>Reset</button>
-      {[0, 1, 2].map((id) => {
-        return (
-          <PresetButton
-            presets={presets}
-            key={id}
-            id={id}
-            onClick={() => handleTimerChange(id)}
-          />
-        );
-      })}
+      <div className="preset-container">
+        {[0, 1, 2].map((id) => {
+          return (
+            <PresetButton
+              presets={presets}
+              key={id}
+              id={id}
+              onClick={() => handleTimerChange(id)}
+            />
+          );
+        })}
+        <button className="set-button" onClick={toggleTimer}>
+          Stop/Go
+        </button>
+        <button className="set-button" onClick={resetTimer}>
+          Reset
+        </button>
+      </div>
     </div>
   );
 }

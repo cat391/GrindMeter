@@ -1,4 +1,5 @@
 import useTimer from "./useTimer";
+import "../App.css";
 
 export default function Timer({ duration, isRunning, reset }) {
   const { hours, minutes, seconds } = useTimer(duration, isRunning, reset);

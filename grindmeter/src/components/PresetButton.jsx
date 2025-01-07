@@ -1,3 +1,5 @@
+import "../App.css";
+
 export default function PresetButton({ presets, onClick, id }) {
   const convertToTimeStr = (org) => {
     let hours = Math.floor((org / (60 * 60)) % 24);
@@ -10,5 +12,9 @@ export default function PresetButton({ presets, onClick, id }) {
     )}:${String(seconds).padStart(2, "0")}`;
   };
 
-  return <button onClick={onClick}>{convertToTimeStr(presets[id])}</button>;
+  return (
+    <button className="preset-button" onClick={onClick}>
+      {convertToTimeStr(presets[id])}
+    </button>
+  );
 }
