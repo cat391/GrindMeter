@@ -5,7 +5,7 @@ import "../App.css";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
-  const [presets, setPresets] = useState([10, 2700, 3600]);
+  const [presets, setPresets] = useState([2, 10, 3600]);
   const [displayedTime, setDisplayedTime] = useState(presets[0]);
   const [shouldReset, setShouldReset] = useState(0);
 
@@ -37,7 +37,7 @@ export default function Home() {
           );
         })}
         <button className="set-button" onClick={toggleTimer}>
-          Stop/Go
+          Pause
         </button>
         <button className="set-button" onClick={resetTimer}>
           Reset

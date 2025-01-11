@@ -5,7 +5,6 @@ export default function useTimer(startingSeconds, isRunning, reset) {
 
   useEffect(() => {
     setTime(startingSeconds);
-    console.log("ran");
   }, [startingSeconds, reset]);
 
   useEffect(() => {
@@ -20,9 +19,12 @@ export default function useTimer(startingSeconds, isRunning, reset) {
     };
   }, [isRunning]);
 
+  const finished = time === 0;
+
   return {
     hours: Math.floor((time / (60 * 60)) % 24),
     minutes: Math.floor((time / 60) % 60),
     seconds: Math.floor(time % 60),
+    state: finished,
   };
 }
