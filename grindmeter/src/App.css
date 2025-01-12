@@ -1,4 +1,8 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* body {
   margin: 0;
 }
 
@@ -84,4 +88,4 @@ body {
 
 .set-button:active {
   box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
-}
+} */
