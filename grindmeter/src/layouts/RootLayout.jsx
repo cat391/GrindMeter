@@ -1,7 +1,11 @@
 import { NavLink, Outlet } from "react-router-dom";
 import "../App.css";
+import { useState } from "react";
+import SettingsModal from "../components/SettingsModal";
 
 export default function RootLayout() {
+  const [open, setOpen] = useState(false);
+
   return (
     <div>
       <header className="h-14 w-full text-white sticky top-0 z-10">
@@ -13,12 +17,15 @@ export default function RootLayout() {
             >
               Home
             </NavLink>
-            <NavLink
+            <button
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
-              to="settings"
+              onClick={() => setOpen(true)}
             >
               Settings
-            </NavLink>
+            </button>
+            <SettingsModal open={open} onClose={() => setOpen(false)}>
+              <h1>Good Morning</h1>
+            </SettingsModal>
             <NavLink
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
               to="login"
