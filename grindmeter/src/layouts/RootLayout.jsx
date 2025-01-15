@@ -23,9 +23,7 @@ export default function RootLayout() {
             >
               Settings
             </button>
-            <SettingsModal open={open} onClose={() => setOpen(false)}>
-              <h1>Good Morning</h1>
-            </SettingsModal>
+
             <NavLink
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
               to="login"
@@ -37,6 +35,7 @@ export default function RootLayout() {
       </header>
 
       <main>
+        <SettingsModal open={open} onClose={() => setOpen(false)} />
         <Outlet />
       </main>
     </div>
