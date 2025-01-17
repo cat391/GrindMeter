@@ -8,16 +8,17 @@ export default function useTimer(startingSeconds, isRunning, reset) {
   }, [startingSeconds, reset]);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning || time === 0) return;
 
     const intervalId = setInterval(() => {
       setTime((prev) => (prev > 0 ? prev - 1 : 0));
+      console.log(Date.now());
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [isRunning]);
+  }, [isRunning, time]);
 
   const finished = time === 0;
 

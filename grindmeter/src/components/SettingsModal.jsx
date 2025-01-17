@@ -1,8 +1,17 @@
 import { IoSettingsOutline } from "react-icons/io5";
 import { exportedPresets } from "../pages/Home";
 import { convertToTimeStr } from "./PresetButton";
+import { useState } from "react";
 
 function SettingsModal({ open, onClose }) {
+  console.log(convertToTimeStr(exportedPresets[0]));
+
+  const [value, setValue] = useState(convertToTimeStr(exportedPresets[0]));
+
+  const handleChange = (event) => {
+    setValue(event.target.value);
+  };
+
   return (
     <div
       className={`fixed inset-0 flex justify-center items-center transition-colors ${
@@ -23,26 +32,7 @@ function SettingsModal({ open, onClose }) {
             <label className="text-customGreen-100 block size text-sm font-medium">
               Preset 1
             </label>
-            <input
-              type="text"
-              defaultValue={convertToTimeStr(exportedPresets[0])}
-            />
-
-            <label className="text-customGreen-100 block size text-sm font-medium">
-              Preset 1
-            </label>
-            <input
-              type="text"
-              defaultValue={convertToTimeStr(exportedPresets[0])}
-            />
-
-            <label className="text-customGreen-100 block size text-sm font-medium">
-              Preset 1
-            </label>
-            <input
-              type="text"
-              defaultValue={convertToTimeStr(exportedPresets[0])}
-            />
+            <input type="text" value={value} onChange={handleChange} />
           </div>
         </div>
 
