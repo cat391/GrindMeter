@@ -1,24 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function useTimer(startingSeconds, isRunning, reset) {
   const [time, setTime] = useState(startingSeconds);
+  const startingTime = useRef(null);
 
+  // Resets time if startingSeconds is reset or changed
   useEffect(() => {
     setTime(startingSeconds);
   }, [startingSeconds, reset]);
 
   useEffect(() => {
-    if (!isRunning || time === 0) return;
+    if (!isRunning) return;
+
+    startingTime.current = Date.now();
 
     const intervalId = setInterval(() => {
-      setTime((prev) => (prev > 0 ? prev - 1 : 0));
-      console.log(Date.now());
-    }, 1000);
+      const passedTime = Math.floor((Date.now() - startingTime.current) / 1000);
+      const remainingTime = Math.max(startingSeconds - passedTime, 0);
+
+      setTime(remainingTime);
+
+      if (remainingTime <= 0) {
+        isRunning = false;
+      }
+    }, 100);
+
+    console.log(`${Date.now()}, ${time}`);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [isRunning, time]);
+  }, [isRunning]);
 
   const finished = time === 0;
 

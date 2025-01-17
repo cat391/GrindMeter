@@ -1,5 +1,6 @@
 import "../App.css";
 
+// Converts seconds to a string of a digital time format
 export const convertToTimeStr = (org) => {
   let hours = Math.floor((org / (60 * 60)) % 24);
   let minutes = Math.floor((org / 60) % 60);
@@ -11,6 +12,7 @@ export const convertToTimeStr = (org) => {
   )}:${String(seconds).padStart(2, "0")}`;
 };
 
+// Component for Timer "Preset" Buttons
 export default function PresetButton({ presets, onClick, id }) {
   return (
     <button
