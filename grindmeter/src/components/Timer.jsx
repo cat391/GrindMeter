@@ -1,12 +1,9 @@
 import useTimer from "./useTimer";
+import { convertToTimeStr } from "./PresetButton";
 import "../App.css";
 
 export default function Timer({ duration, isRunning, reset }) {
-  const { hours, minutes, seconds, state } = useTimer(
-    duration,
-    isRunning,
-    reset
-  );
+  const { state, totalSeconds } = useTimer(duration, isRunning, reset);
 
   return (
     <div
@@ -16,8 +13,7 @@ export default function Timer({ duration, isRunning, reset }) {
           : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
       }
     >
-      {String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}:
-      {String(seconds).padStart(2, "0")}
+      {convertToTimeStr(totalSeconds)}
     </div>
   );
 }

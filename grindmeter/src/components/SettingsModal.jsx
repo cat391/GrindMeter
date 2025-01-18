@@ -4,8 +4,6 @@ import { convertToTimeStr } from "./PresetButton";
 import { useState } from "react";
 
 function SettingsModal({ open, onClose }) {
-  console.log(convertToTimeStr(exportedPresets[0]));
-
   const [value, setValue] = useState(convertToTimeStr(exportedPresets[0]));
 
   const handleChange = (event) => {

@@ -2,42 +2,50 @@ import { useState, useEffect, useRef } from "react";
 
 export default function useTimer(startingSeconds, isRunning, reset) {
   const [time, setTime] = useState(startingSeconds);
-  const startingTime = useRef(null);
+  const remainingTimeRef = useRef(startingSeconds);
+  const intervalRef = useRef(null);
 
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
     setTime(startingSeconds);
+    remainingTimeRef.current = startingSeconds;
   }, [startingSeconds, reset]);
 
   useEffect(() => {
-    if (!isRunning) return;
+    // if (!isRunning) return;
 
-    startingTime.current = Date.now();
+    if (isRunning) {
+      const startingTime = Date.now();
 
-    const intervalId = setInterval(() => {
-      const passedTime = Math.floor((Date.now() - startingTime.current) / 1000);
-      const remainingTime = Math.max(startingSeconds - passedTime, 0);
+      intervalRef.current = setInterval(() => {
+        const passedTime = Math.floor((Date.now() - startingTime) / 1000);
+        const remainingTime = Math.max(
+          remainingTimeRef.current - passedTime,
+          0
+        ); // Updated startingSeconds to remainingTimeRef
 
-      setTime(remainingTime);
+        // console.log(startingSeconds, passedTime, remainingTime);
 
-      if (remainingTime <= 0) {
-        isRunning = false;
-      }
-    }, 100);
+        setTime(remainingTime);
 
-    console.log(`${Date.now()}, ${time}`);
+        if (remainingTime <= 0) {
+          clearInterval(intervalRef.current);
+        }
+      }, 100);
+    } else {
+      clearInterval(intervalRef.current);
+      remainingTimeRef.current = time;
+    }
 
     return () => {
-      clearInterval(intervalId);
+      clearInterval(intervalRef.current);
     };
   }, [isRunning]);
 
   const finished = time === 0;
 
   return {
-    hours: Math.floor((time / (60 * 60)) % 24),
-    minutes: Math.floor((time / 60) % 60),
-    seconds: Math.floor(time % 60),
     state: finished,
+    totalSeconds: time,
   };
 }

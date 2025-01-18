@@ -8,7 +8,7 @@ export let exportedPresets = [180, 10, 5400];
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
-  const [presets, setPresets] = useState([180, 600, 5400]);
+  const [presets, setPresets] = useState([2, 600, 5400]);
   const [displayedTime, setDisplayedTime] = useState(presets[0]);
   const [shouldReset, setShouldReset] = useState(0);
 
