@@ -6,10 +6,9 @@ export const convertToTimeStr = (org) => {
   let minutes = Math.floor((org / 60) % 60);
   let seconds = Math.floor(org % 60);
 
-  return `${hours != 0 ? String(hours) + ":" : ""}${String(minutes).padStart(
-    2,
-    "0"
-  )}:${String(seconds).padStart(2, "0")}`;
+  return `${hours != 0 ? String(hours) + ":" : ""}${
+    minutes != 0 ? String(minutes) + ":" : "0:"
+  }${String(seconds).padStart(2, "0")}`;
 };
 
 // Component for Timer "Preset" Buttons
