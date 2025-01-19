@@ -1,16 +1,33 @@
 import useTimer from "./useTimer";
 import "../App.css";
 
-// Maybe combine this one and the other???
 const convertToTimeStrV2 = (org) => {
   {
-    let hours = Math.floor((org / (60 * 60)) % 24);
-    let minutes = Math.floor((org / 60) % 60);
-    let seconds = Math.floor(org % 60);
+    let m = Math.floor((org / 60) % 60);
+    let s = Math.floor(org % 60);
+    let h = Math.floor((org / (60 * 60)) % 24);
 
-    return `${hours != 0 ? String(hours) + ":" : ""}${
-      minutes != 0 ? String(minutes) + ":" : ""
-    }${seconds === 0 && minutes ? "00" : seconds}`;
+    let minutes = () => {
+      if (h === 0 && m === 0) {
+        return ""; // No hours or minutes
+      } else if (h !== 0 && m === 0) {
+        return "00:"; // hours but no minutes
+      } else {
+        return String(m) + ":";
+      }
+    };
+
+    let seconds = () => {
+      if (s === 0 && (h !== 0 || m !== 0)) {
+        return "00"; // No seconds with hours or minutes
+      } else if (s / 10 < 1 && (h !== 0 || m !== 0)) {
+        return "0" + String(s); // Single digit seconds with minutes or hours
+      } else {
+        return String(s);
+      }
+    };
+
+    return `${h != 0 ? String(h) + ":" : ""}${minutes()}${seconds()}`;
   }
 };
 

@@ -1,11 +1,8 @@
 import { IoSettingsOutline } from "react-icons/io5";
-import { exportedPresets } from "../pages/Home";
 import { convertToTimeStr } from "./PresetButton";
 import { useState } from "react";
 
 function SettingsModal({ open, onClose }) {
-  const [value, setValue] = useState(convertToTimeStr(exportedPresets[0]));
-
   const handleChange = (event) => {
     setValue(event.target.value);
   };
@@ -30,7 +27,7 @@ function SettingsModal({ open, onClose }) {
             <label className="text-customGreen-100 block size text-sm font-medium">
               Preset 1
             </label>
-            <input type="text" value={value} onChange={handleChange} />
+            <input type="text" value={"HAMBURGER"} onChange={handleChange} />
           </div>
         </div>
 

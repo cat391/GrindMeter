@@ -3,16 +3,13 @@ import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
 import "../App.css";
 import { BiPause, BiReset, BiPlay } from "react-icons/bi";
-
-export let exportedPresets = [180, 10, 5400];
+import { usePresetContext } from "../components/PresetContext";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
-  const [presets, setPresets] = useState([2, 10, 5400]);
+  const { presets, setPresets } = usePresetContext();
   const [displayedTime, setDisplayedTime] = useState(presets[0]);
   const [shouldReset, setShouldReset] = useState(0);
-
-  exportedPresets = presets;
 
   const handleTimerChange = (id) => {
     setDisplayedTime(presets[id]);

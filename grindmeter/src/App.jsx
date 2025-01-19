@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider, Route } from "react-router-dom";
 import { createRoutesFromElements } from "react-router-dom";
+import { PresetProvider } from "./components/PresetContext";
 
 import "./App.css";
 
@@ -10,8 +11,22 @@ import Login from "./pages/Login";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<RootLayout />}>
-      <Route index element={<Home />} />
+    <Route
+      path="/"
+      element={
+        <PresetProvider>
+          <RootLayout />
+        </PresetProvider>
+      }
+    >
+      <Route
+        index
+        element={
+          <PresetProvider>
+            <Home />
+          </PresetProvider>
+        }
+      />
       <Route path="login" element={<Login />} />
     </Route>
   )
