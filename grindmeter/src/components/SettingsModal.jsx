@@ -1,10 +1,15 @@
 import { IoSettingsOutline } from "react-icons/io5";
 import { convertToTimeStr } from "./PresetButton";
 import { useState } from "react";
+import { usePresetContext } from "./PresetContext";
+import TimerInput from "./TimerInput";
 
 function SettingsModal({ open, onClose }) {
+  const { presets, setPresets } = usePresetContext();
+  const [p1, setP1] = useState(convertToTimeStr(presets[0]));
+
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setP1(event.target.value);
   };
 
   return (
@@ -24,10 +29,25 @@ function SettingsModal({ open, onClose }) {
               Custom Presets
             </h2>
 
-            <label className="text-customGreen-100 block size text-sm font-medium">
-              Preset 1
-            </label>
-            <input type="text" value={"HAMBURGER"} onChange={handleChange} />
+            <TimerInput value={p1} />
+            {/* 
+            <input
+              type="text"
+              value={p1}
+              onChange={handleChange}
+              placeholder="00:00:00"
+            /> */}
+            <div>
+              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+                Preset 1
+              </button>
+              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+                Preset 2
+              </button>
+              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+                Preset 3
+              </button>
+            </div>
           </div>
         </div>
 
