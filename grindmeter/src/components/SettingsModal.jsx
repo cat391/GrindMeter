@@ -29,7 +29,7 @@ function SettingsModal({ open, onClose }) {
               Custom Presets
             </h2>
 
-            <TimerInput value={p1} />
+            <TimerInput value={"00:10:00"} />
             {/* 
             <input
               type="text"
@@ -37,7 +37,7 @@ function SettingsModal({ open, onClose }) {
               onChange={handleChange}
               placeholder="00:00:00"
             /> */}
-            <div>
+            <div className="flex justify-center gap-2 m-3">
               <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
                 Preset 1
               </button>
