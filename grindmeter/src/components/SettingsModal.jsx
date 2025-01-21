@@ -5,11 +5,13 @@ import { usePresetContext } from "./PresetContext";
 import TimerInput from "./TimerInput";
 
 function SettingsModal({ open, onClose }) {
-  const { presets, setPresets } = usePresetContext();
-  const [p1, setP1] = useState(convertToTimeStr(presets[0]));
+  const { presets, setPresets, currentPreset, setCurrentPreset } =
+    usePresetContext();
 
-  const handleChange = (event) => {
-    setP1(event.target.value);
+  const [selectedTime, setSelectedTime] = useState(presets[1]);
+
+  const handleClick = (e) => {
+    setCurrentPreset(presets[e.target.id]);
   };
 
   return (
@@ -29,22 +31,28 @@ function SettingsModal({ open, onClose }) {
               Custom Presets
             </h2>
 
-            <TimerInput value={"00:10:00"} />
-            {/* 
-            <input
-              type="text"
-              value={p1}
-              onChange={handleChange}
-              placeholder="00:00:00"
-            /> */}
+            <TimerInput />
+
             <div className="flex justify-center gap-2 m-3">
-              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+              <button
+                id="0"
+                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                onClick={handleClick}
+              >
                 Preset 1
               </button>
-              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+              <button
+                id="1"
+                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                onClick={handleClick}
+              >
                 Preset 2
               </button>
-              <button className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md">
+              <button
+                id="2"
+                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                onClick={handleClick}
+              >
                 Preset 3
               </button>
             </div>
