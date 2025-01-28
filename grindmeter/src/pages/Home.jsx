@@ -8,11 +8,11 @@ import { usePresetContext } from "../components/PresetContext";
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
   const { presets, setPresets } = usePresetContext();
-  const [displayedTime, setDisplayedTime] = useState(presets[0]);
+  const [displayedTime, setDisplayedTime] = useState(0);
   const [shouldReset, setShouldReset] = useState(0);
 
   const handleTimerChange = (id) => {
-    setDisplayedTime(presets[id]);
+    setDisplayedTime(id);
     setIsOn(false);
   };
 

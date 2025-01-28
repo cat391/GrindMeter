@@ -1,5 +1,6 @@
 import useTimer from "./useTimer";
 import "../App.css";
+import { usePresetContext } from "./PresetContext";
 
 const convertToTimeStrV2 = (org) => {
   {
@@ -13,7 +14,11 @@ const convertToTimeStrV2 = (org) => {
       } else if (h !== 0 && m === 0) {
         return "00:"; // hours but no minutes
       } else {
-        return String(m) + ":";
+        if (m < 10) {
+          return "0" + String(m) + ":";
+        } else {
+          return String(m) + ":";
+        }
       }
     };
 
@@ -32,7 +37,8 @@ const convertToTimeStrV2 = (org) => {
 };
 
 export default function Timer({ duration, isRunning, reset }) {
-  const { state, totalSeconds } = useTimer(duration, isRunning, reset);
+  const { presets } = usePresetContext();
+  const { state, totalSeconds } = useTimer(presets[duration], isRunning, reset);
 
   return (
     <div

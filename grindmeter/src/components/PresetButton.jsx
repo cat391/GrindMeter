@@ -12,7 +12,11 @@ export const convertToTimeStr = (org) => {
     } else if (hours !== 0 && formattedMinutes === 0) {
       return "00:"; // Hours but no minutes
     } else {
-      return String(formattedMinutes) + ":";
+      if (formattedMinutes < 10) {
+        return "0" + String(formattedMinutes) + ":";
+      } else {
+        return String(formattedMinutes) + ":";
+      }
     }
   };
 

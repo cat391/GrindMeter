@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { usePresetContext } from "./PresetContext";
 
 export default function useTimer(startingSeconds, isRunning, reset) {
+  const { presets } = usePresetContext();
   const [time, setTime] = useState(startingSeconds);
   const remainingTimeRef = useRef(startingSeconds);
   const intervalRef = useRef(null);
@@ -9,7 +11,7 @@ export default function useTimer(startingSeconds, isRunning, reset) {
   useEffect(() => {
     setTime(startingSeconds);
     remainingTimeRef.current = startingSeconds;
-  }, [startingSeconds, reset]);
+  }, [startingSeconds, reset, presets]);
 
   useEffect(() => {
     // if (!isRunning) return;

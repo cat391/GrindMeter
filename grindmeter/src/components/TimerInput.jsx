@@ -32,18 +32,15 @@ export default function TimerInput() {
 
   const handleSave = () => {
     const currentPresetIndex = presets.indexOf(currentPreset);
-    setPresets(() => {
-      const temp = [];
-      for (let i = 0; i < 3; i++) {
-        if (i != currentPresetIndex) {
-          temp.push(presets[i]);
-        } else {
-          temp.push(hour * 60 * 60 + minute * 60 + second);
-        }
-      } // this is not working properly
-      return temp;
+
+    console.log("ran");
+    setPresets((prevPresets) => {
+      return prevPresets.map((preset, index) =>
+        index === currentPresetIndex
+          ? hour * 3600 + minute * 60 + second
+          : preset
+      );
     });
-    console.log(presets);
   };
 
   useEffect(() => {
