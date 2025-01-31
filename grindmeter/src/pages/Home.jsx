@@ -25,7 +25,11 @@ export default function Home() {
   return (
     <div>
       <h2>
-        <Timer duration={displayedTime} isRunning={isOn} reset={shouldReset} />
+        <Timer
+          durationID={displayedTime}
+          isRunning={isOn}
+          reset={shouldReset}
+        />
       </h2>
       <div className="flex space-x-4 justify-center items-center h-50">
         {[0, 1, 2].map((id) => {

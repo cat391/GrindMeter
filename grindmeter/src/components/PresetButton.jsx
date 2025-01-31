@@ -1,4 +1,5 @@
 import "../App.css";
+import { usePresetContext } from "./PresetContext";
 
 // Converts seconds to a string of a digital time format
 export const convertToTimeStr = (org) => {
@@ -11,12 +12,10 @@ export const convertToTimeStr = (org) => {
       return "0:"; // No hours or minutes
     } else if (hours !== 0 && formattedMinutes === 0) {
       return "00:"; // Hours but no minutes
+    } else if (hours !== 0 && formattedMinutes < 10) {
+      return "0" + String(formattedMinutes) + ":"; // Hours but less than 10 minutes
     } else {
-      if (formattedMinutes < 10) {
-        return "0" + String(formattedMinutes) + ":";
-      } else {
-        return String(formattedMinutes) + ":";
-      }
+      return String(formattedMinutes) + ":";
     }
   };
 
@@ -28,7 +27,9 @@ export const convertToTimeStr = (org) => {
 };
 
 // Component for Timer "Preset" Buttons
-export default function PresetButton({ presets, onClick, id }) {
+export default function PresetButton({ onClick, id }) {
+  const { presets } = usePresetContext();
+
   return (
     <button
       className="cursor-pointer transition-all bg-customBlack-300 text-white px-6 py-2 rounded-lg

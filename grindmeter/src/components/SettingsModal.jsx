@@ -8,8 +8,6 @@ function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
 
-  const [selectedTime, setSelectedTime] = useState(presets[1]);
-
   const handleClick = (e) => {
     setCurrentPreset(presets[e.target.id]);
   };

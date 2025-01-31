@@ -1,22 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { usePresetContext } from "./PresetContext";
 
-export default function useTimer(startingSeconds, isRunning, reset) {
+export default function useTimer(duration, isRunning, reset) {
   const { presets } = usePresetContext();
-  const [time, setTime] = useState(startingSeconds);
-  const remainingTimeRef = useRef(startingSeconds);
+  const [time, setTime] = useState(presets[duration]);
+  const [running, setRunning] = useState(isRunning);
+  const remainingTimeRef = useRef(presets[duration]);
   const intervalRef = useRef(null);
+
+  // Changes running state if prop changes (unpaused or paused)
+  useEffect(() => setRunning(isRunning), [isRunning]);
 
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
-    setTime(startingSeconds);
-    remainingTimeRef.current = startingSeconds;
-  }, [startingSeconds, reset, presets]);
+    setTime(presets[duration]);
+    remainingTimeRef.current = presets[duration];
+    console.log("triggered");
+  }, [duration, reset, presets]);
 
   useEffect(() => {
-    // if (!isRunning) return;
-
-    if (isRunning) {
+    if (running) {
       const startingTime = Date.now();
 
       intervalRef.current = setInterval(() => {
@@ -42,7 +45,7 @@ export default function useTimer(startingSeconds, isRunning, reset) {
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [isRunning]);
+  }, [running, presets]);
 
   const finished = time === 0;
 

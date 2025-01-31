@@ -19,14 +19,7 @@ const router = createBrowserRouter(
         </PresetProvider>
       }
     >
-      <Route
-        index
-        element={
-          <PresetProvider>
-            <Home />
-          </PresetProvider>
-        }
-      />
+      <Route index element={<Home />} />
       <Route path="login" element={<Login />} />
     </Route>
   )

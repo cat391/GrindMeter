@@ -13,12 +13,10 @@ const convertToTimeStrV2 = (org) => {
         return ""; // No hours or minutes
       } else if (h !== 0 && m === 0) {
         return "00:"; // hours but no minutes
+      } else if (h !== 0 && m < 10) {
+        return "0" + String(m) + ":"; // Hours but less than 10 minutes
       } else {
-        if (m < 10) {
-          return "0" + String(m) + ":";
-        } else {
-          return String(m) + ":";
-        }
+        return String(m) + ":";
       }
     };
 
@@ -36,9 +34,9 @@ const convertToTimeStrV2 = (org) => {
   }
 };
 
-export default function Timer({ duration, isRunning, reset }) {
+export default function Timer({ durationID, isRunning, reset }) {
   const { presets } = usePresetContext();
-  const { state, totalSeconds } = useTimer(presets[duration], isRunning, reset);
+  const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
 
   return (
     <div
