@@ -19,6 +19,12 @@ export default function useTimer(duration, isRunning, reset) {
   }, [duration, reset, presets]);
 
   useEffect(() => {
+    clearInterval(intervalRef.current);
+
+    const updatedTime = presets[duration];
+    setTime(updatedTime);
+    remainingTimeRef.current = updatedTime;
+
     if (running) {
       const startingTime = Date.now();
 

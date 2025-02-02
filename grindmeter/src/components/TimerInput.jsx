@@ -32,16 +32,20 @@ export default function TimerInput() {
 
   const handleSave = () => {
     const currentPresetIndex = presets.indexOf(currentPreset);
+    const updatedPreset = hour * 3600 + minute * 60 + second;
 
-    console.log("ran");
     setPresets((prevPresets) => {
-      return prevPresets.map((preset, index) =>
-        index === currentPresetIndex
-          ? hour * 3600 + minute * 60 + second
-          : preset
+      const newPresets = prevPresets.map((preset, index) =>
+        index === currentPresetIndex ? updatedPreset : preset
       );
+
+      setCurrentPreset(updatedPreset);
+
+      return newPresets;
     });
   };
+
+  // Make it so that currentPreset changes to, to the new value of houur * 3600, etc.
 
   useEffect(() => {
     setHour(Math.floor((currentPreset / (60 * 60)) % 24));

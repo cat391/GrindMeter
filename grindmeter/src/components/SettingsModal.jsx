@@ -1,6 +1,6 @@
 import { IoSettingsOutline } from "react-icons/io5";
 import { convertToTimeStr } from "./PresetButton";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePresetContext } from "./PresetContext";
 import TimerInput from "./TimerInput";
 
@@ -8,8 +8,16 @@ function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
 
+  let lastUsedIndex = 0;
+
   const handleClick = (e) => {
     setCurrentPreset(presets[e.target.id]);
+    lastUsedIndex = e.target.id;
+  };
+
+  const handleClose = () => {
+    setCurrentPreset(presets[lastUsedIndex]);
+    onClose();
   };
 
   return (
@@ -59,7 +67,7 @@ function SettingsModal({ open, onClose }) {
 
         <hr className="my-4"></hr>
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="border-2 border-customGreen-300 text-customGreen-200 p-2 rounded-md transition duration-300 ease-in-out transform hover:text-customGreen-100"
         >
           Close
