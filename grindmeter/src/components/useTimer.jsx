@@ -7,24 +7,46 @@ export default function useTimer(duration, isRunning, reset) {
   const [running, setRunning] = useState(isRunning);
   const remainingTimeRef = useRef(presets[duration]);
   const intervalRef = useRef(null);
+  const oldPresets = useRef(presets);
+  const shouldReset = useRef(true);
+  const prevResetVal = useRef(reset);
 
   // Changes running state if prop changes (unpaused or paused)
   useEffect(() => setRunning(isRunning), [isRunning]);
 
+  useEffect(() => {
+    /*
+    Checks if the timer should be reset if the presets change.
+    - It should be reset if the preset changed is the one being used.
+    */
+    presets.forEach((element, index) => {
+      // Finds the index of the preset that changed, and compares that index to the current preset being used
+      if (element !== oldPresets.current[index] && index !== duration) {
+        shouldReset.current = false;
+      }
+    });
+
+    oldPresets.current = presets;
+  }, [presets]);
+
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
-    setTime(presets[duration]);
-    remainingTimeRef.current = presets[duration];
-    console.log("triggered");
-  }, [duration, reset, presets]);
+    /*
+    Checks if it can be reset, if the reset button is pushed it overrides and resets anyways.
+    - Note that the prop reset is a number, not a boolean. 
+    */
+    if (shouldReset.current || reset > prevResetVal.current) {
+      setTime(presets[duration]);
+      remainingTimeRef.current = presets[duration];
+      console.log("triggered");
+    } else {
+      shouldReset.current = true;
+    }
+
+    prevResetVal.current = reset;
+  }, [duration, reset]);
 
   useEffect(() => {
-    clearInterval(intervalRef.current);
-
-    const updatedTime = presets[duration];
-    setTime(updatedTime);
-    remainingTimeRef.current = updatedTime;
-
     if (running) {
       const startingTime = Date.now();
 
@@ -33,9 +55,7 @@ export default function useTimer(duration, isRunning, reset) {
         const remainingTime = Math.max(
           remainingTimeRef.current - passedTime,
           0
-        ); // Updated startingSeconds to remainingTimeRef
-
-        // console.log(startingSeconds, passedTime, remainingTime);
+        );
 
         setTime(remainingTime);
 
