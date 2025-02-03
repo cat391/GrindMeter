@@ -10,6 +10,7 @@ export default function useTimer(duration, isRunning, reset) {
   const oldPresets = useRef(presets);
   const shouldReset = useRef(true);
   const prevResetVal = useRef(reset);
+  const prevDurationVal = useRef(duration);
 
   // Changes running state if prop changes (unpaused or paused)
   useEffect(() => setRunning(isRunning), [isRunning]);
@@ -32,10 +33,14 @@ export default function useTimer(duration, isRunning, reset) {
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
     /*
-    Checks if it can be reset, if the reset button is pushed it overrides and resets anyways.
+    Checks if it can be reset, if the reset or different preset button is pushed it overrides and resets anyways.
     - Note that the prop reset is a number, not a boolean. 
     */
-    if (shouldReset.current || reset > prevResetVal.current) {
+    if (
+      shouldReset.current ||
+      reset > prevResetVal.current ||
+      prevDurationVal.current !== duration
+    ) {
       setTime(presets[duration]);
       remainingTimeRef.current = presets[duration];
       console.log("triggered");
@@ -44,6 +49,7 @@ export default function useTimer(duration, isRunning, reset) {
     }
 
     prevResetVal.current = reset;
+    prevDurationVal.current = duration;
   }, [duration, reset]);
 
   useEffect(() => {
