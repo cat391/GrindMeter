@@ -42,21 +42,33 @@ function SettingsModal({ open, onClose }) {
             <div className="flex justify-center gap-2 m-3">
               <button
                 id="0"
-                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                className={
+                  presets.indexOf(currentPreset) !== 0
+                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
+                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
+                }
                 onClick={handleClick}
               >
                 Preset 1
               </button>
               <button
                 id="1"
-                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                className={
+                  presets.indexOf(currentPreset) !== 1
+                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
+                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
+                }
                 onClick={handleClick}
               >
                 Preset 2
               </button>
               <button
                 id="2"
-                className="border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md"
+                className={
+                  presets.indexOf(currentPreset) !== 2
+                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
+                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
+                }
                 onClick={handleClick}
               >
                 Preset 3
