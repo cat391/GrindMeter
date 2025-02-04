@@ -38,8 +38,34 @@ const convertToTimeStrV2 = (org) => {
 export default function Timer({ durationID, isRunning, reset }) {
   const { presets } = usePresetContext();
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
-
   const audioRef = useRef(null);
+
+  const playAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      console.log("asdfsf");
+    }
+  };
+
+  const pauseAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
+  useEffect(() => {
+    if (state) {
+      playAudio();
+    } else {
+      pauseAudio();
+    }
+
+    // Cleanup function to pause audio when component unmounts
+    return () => {
+      pauseAudio();
+    };
+  }, [state]);
 
   return (
     <div>

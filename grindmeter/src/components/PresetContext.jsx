@@ -7,7 +7,7 @@ export function usePresetContext() {
 }
 
 export function PresetProvider({ children }) {
-  const [presets, setPresets] = useState([60 * 9, 60 * 60 + 60 * 6, 60 * 90]);
+  const [presets, setPresets] = useState([60 * 10, 60 * 60, 60 * 90]);
   const [currentPreset, setCurrentPreset] = useState(presets[0]);
 
   return (
