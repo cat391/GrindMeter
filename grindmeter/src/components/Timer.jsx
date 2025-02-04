@@ -1,6 +1,7 @@
 import useTimer from "./useTimer";
 import "../App.css";
 import { usePresetContext } from "./PresetContext";
+import { useRef, useEffect } from "react";
 
 const convertToTimeStrV2 = (org) => {
   {
@@ -38,15 +39,20 @@ export default function Timer({ durationID, isRunning, reset }) {
   const { presets } = usePresetContext();
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
 
+  const audioRef = useRef(null);
+
   return (
-    <div
-      className={
-        state
-          ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700"
-          : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
-      }
-    >
-      {convertToTimeStrV2(totalSeconds)}
+    <div>
+      <audio ref={audioRef} src="/sounds/betav2-ringtone.wav" loop />
+      <div
+        className={
+          state
+            ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700"
+            : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
+        }
+      >
+        {convertToTimeStrV2(totalSeconds)}
+      </div>
     </div>
   );
 }
