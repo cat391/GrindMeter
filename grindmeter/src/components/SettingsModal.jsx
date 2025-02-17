@@ -1,8 +1,8 @@
 import { IoSettingsOutline } from "react-icons/io5";
-import { convertToTimeStr } from "./PresetButton";
 import { useState, useEffect } from "react";
 import { usePresetContext } from "./PresetContext";
 import TimerInput from "./TimerInput";
+import VolumeSlider from "./VolumeSlider";
 
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
@@ -74,6 +74,8 @@ function SettingsModal({ open, onClose }) {
                 Preset 3
               </button>
             </div>
+            <h2 className="text-customGreen-100 block font-medium">Ringtone</h2>
+            <VolumeSlider />
           </div>
         </div>
 

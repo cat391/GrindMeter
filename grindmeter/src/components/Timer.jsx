@@ -36,7 +36,15 @@ const convertToTimeStrV2 = (org) => {
 };
 
 export default function Timer({ durationID, isRunning, reset }) {
-  const { presets } = usePresetContext();
+  const {
+    presets,
+    setPresets,
+    currentPreset,
+    setCurrentPreset,
+    volume,
+    setVolume,
+  } = usePresetContext();
+
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
   const audioRef = useRef(null);
 
@@ -44,7 +52,6 @@ export default function Timer({ durationID, isRunning, reset }) {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
       audioRef.current.play();
-      console.log("asdfsf");
     }
   };
 
@@ -66,6 +73,11 @@ export default function Timer({ durationID, isRunning, reset }) {
       pauseAudio();
     };
   }, [state]);
+
+  // Changes volume if user changes it in settings
+  useEffect(() => {
+    audioRef.current.volume = volume / 100;
+  }, [volume]);
 
   return (
     <div>

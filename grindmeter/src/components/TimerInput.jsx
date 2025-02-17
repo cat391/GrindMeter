@@ -2,10 +2,6 @@ import { useState, useEffect } from "react";
 import { usePresetContext } from "./PresetContext";
 
 export default function TimerInput() {
-  // Reset the values, if closed
-
-  // I HAVE TO MAKE IT SO THAT WHEN THE PRESETS CHANGE, IT CHANGES EVERYWHERE IN THE CODE, use USEEFFECT
-
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
 
@@ -44,8 +40,6 @@ export default function TimerInput() {
       return newPresets;
     });
   };
-
-  // Make it so that currentPreset changes to, to the new value of houur * 3600, etc.
 
   useEffect(() => {
     setHour(Math.floor((currentPreset / (60 * 60)) % 24));
