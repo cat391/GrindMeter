@@ -30,7 +30,6 @@ export default function Home() {
     presets.forEach((element, index) => {
       // Finds the index of the preset that changed, and compares that index to the current preset being used
       if (element !== oldPresets.current[index] && index === displayedTime) {
-        // console.log(element, index, displayedTime);
         shouldResetTimer = true; // Must reset displayed timer, as it was changed
       }
     });

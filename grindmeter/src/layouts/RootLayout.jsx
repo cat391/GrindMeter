@@ -28,7 +28,7 @@ export default function RootLayout() {
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
               to="login"
             >
-              Login
+              Profile
             </NavLink>
           </nav>
         </section>

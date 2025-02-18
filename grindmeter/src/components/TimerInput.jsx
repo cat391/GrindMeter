@@ -10,6 +10,7 @@ export default function TimerInput() {
   );
   const [minute, setMinute] = useState(Math.floor((currentPreset / 60) % 60));
   const [second, setSecond] = useState(currentPreset % 60);
+  const [errorSave, setErrorSave] = useState(false);
 
   const handleChange = (e) => {
     const input = e.target.value;
@@ -19,10 +20,15 @@ export default function TimerInput() {
 
     if (id === "hour" && Number(input) < 24) {
       setHour(Number(input));
-    } else if (id === "minute" && Number(input < 60)) {
+    } else if (id === "minute" && Number(input) < 60) {
       setMinute(Number(input));
-    } else if (Number(input < 60)) {
+    } else if (Number(input) < 60) {
       setSecond(Number(input));
+    }
+
+    if (input === 0) {
+      setErrorSave(true);
+      setTimeout(() => setErrorSave(false), 1000);
     }
   };
 
@@ -31,6 +37,13 @@ export default function TimerInput() {
     const updatedPreset = hour * 3600 + minute * 60 + second;
 
     setPresets((prevPresets) => {
+      if (updatedPreset === 0) {
+        setErrorSave(true);
+        console.log("asdf");
+        setTimeout(() => setErrorSave(false), 500);
+        return prevPresets; // Do not change presets if updated preset has no time
+      }
+
       const newPresets = prevPresets.map((preset, index) =>
         index === currentPresetIndex ? updatedPreset : preset
       );
@@ -81,7 +94,12 @@ export default function TimerInput() {
         />
       </div>
       <div className="flex justify-center text-center text-customGreen-100 m-5">
-        <button onClick={handleSave}>Save</button>
+        <button
+          className={errorSave ? "text-red-600" : null}
+          onClick={handleSave}
+        >
+          Save
+        </button>
       </div>
     </div>
   );

@@ -1,16 +1,11 @@
 import { useState } from "react";
-import { usePresetContext } from "./PresetContext";
+import { useVolumeContext } from "./PresetContext";
 import { IoMdVolumeHigh, IoMdVolumeLow, IoMdVolumeMute } from "react-icons/io";
 
 function VolumeSlider() {
-  const {
-    presets,
-    setPresets,
-    currentPreset,
-    setCurrentPreset,
-    volume,
-    setVolume,
-  } = usePresetContext();
+  const { volume, setVolume } = useVolumeContext();
+
+  const [isGrabbing, setIsGrabbing] = useState(false);
 
   const handleVolumeChange = (e) => {
     setVolume(Number(e.target.value));
@@ -36,7 +31,14 @@ function VolumeSlider() {
         step="1"
         value={volume}
         onChange={handleVolumeChange}
-        className="w-1/2 h-9 accent-customGreen-100"
+        className={
+          isGrabbing
+            ? "w-1/2 h-9 accent-customGreen-100 cursor-grabbing"
+            : "w-1/2 h-9 accent-customGreen-100 cursor-grab"
+        }
+        onMouseDown={() => setIsGrabbing(true)}
+        onMouseUp={() => setIsGrabbing(false)}
+        onMouseLeave={() => setIsGrabbing(false)}
       />
     </div>
   );

@@ -1,9 +1,14 @@
 import { createContext, useState, useContext } from "react";
 
 const PresetContext = createContext();
+const VolumeContext = createContext();
 
 export function usePresetContext() {
   return useContext(PresetContext);
+}
+
+export function useVolumeContext() {
+  return useContext(VolumeContext);
 }
 
 export function PresetProvider({ children }) {
@@ -18,11 +23,11 @@ export function PresetProvider({ children }) {
         setPresets,
         currentPreset,
         setCurrentPreset,
-        volume,
-        setVolume,
       }}
     >
-      {children}
+      <VolumeContext.Provider value={{ volume, setVolume }}>
+        {children}
+      </VolumeContext.Provider>
     </PresetContext.Provider>
   );
 }

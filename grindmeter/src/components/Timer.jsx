@@ -1,6 +1,6 @@
 import useTimer from "./useTimer";
 import "../App.css";
-import { usePresetContext } from "./PresetContext";
+import { useVolumeContext } from "./PresetContext";
 import { useRef, useEffect } from "react";
 
 const convertToTimeStrV2 = (org) => {
@@ -36,14 +36,7 @@ const convertToTimeStrV2 = (org) => {
 };
 
 export default function Timer({ durationID, isRunning, reset }) {
-  const {
-    presets,
-    setPresets,
-    currentPreset,
-    setCurrentPreset,
-    volume,
-    setVolume,
-  } = usePresetContext();
+  const { volume } = useVolumeContext();
 
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
   const audioRef = useRef(null);
