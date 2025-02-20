@@ -1,26 +1,30 @@
 import { createBrowserRouter, RouterProvider, Route } from "react-router-dom";
 import { createRoutesFromElements } from "react-router-dom";
-import { PresetProvider } from "./components/PresetContext";
+import { PresetProvider } from "./context/PresetContext";
+import { useEffect } from "react";
+import { AuthContextProvider } from "./context/AuthContext";
 
 import "./App.css";
 
 // Pages
 import Home from "./pages/Home";
 import RootLayout from "./layouts/RootLayout";
-import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
       element={
-        <PresetProvider>
-          <RootLayout />
-        </PresetProvider>
+        <AuthContextProvider>
+          <PresetProvider>
+            <RootLayout />
+          </PresetProvider>
+        </AuthContextProvider>
       }
     >
       <Route index element={<Home />} />
-      <Route path="login" element={<Login />} />
+      <Route path="profile" element={<Profile />} />
     </Route>
   )
 );

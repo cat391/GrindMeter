@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useVolumeContext } from "./PresetContext";
+import { useVolumeContext } from "../context/PresetContext";
 import { IoMdVolumeHigh, IoMdVolumeLow, IoMdVolumeMute } from "react-icons/io";
 
 function VolumeSlider() {

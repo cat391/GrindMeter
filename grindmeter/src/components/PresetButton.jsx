@@ -1,5 +1,5 @@
 import "../App.css";
-import { usePresetContext } from "./PresetContext";
+import { usePresetContext } from "../context/PresetContext";
 
 // Converts seconds to a string of a digital time format
 export const convertToTimeStr = (org) => {

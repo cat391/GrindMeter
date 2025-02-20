@@ -3,7 +3,7 @@ import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
 import "../App.css";
 import { BiPause, BiReset, BiPlay } from "react-icons/bi";
-import { usePresetContext } from "../components/PresetContext";
+import { usePresetContext } from "../context/PresetContext";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);

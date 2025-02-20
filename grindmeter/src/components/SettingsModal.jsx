@@ -1,6 +1,6 @@
 import { IoSettingsOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
-import { usePresetContext } from "./PresetContext";
+import { usePresetContext } from "../context/PresetContext";
 import TimerInput from "./TimerInput";
 import VolumeSlider from "./VolumeSlider";
 

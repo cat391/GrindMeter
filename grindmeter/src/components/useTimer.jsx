@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { usePresetContext } from "./PresetContext";
+import { usePresetContext } from "../context/PresetContext";
 
 export default function useTimer(duration, isRunning, reset) {
   const { presets } = usePresetContext();

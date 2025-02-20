@@ -26,7 +26,7 @@ export default function RootLayout() {
 
             <NavLink
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
-              to="login"
+              to="profile"
             >
               Profile
             </NavLink>
