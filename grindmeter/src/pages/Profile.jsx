@@ -21,8 +21,6 @@ export default function Login() {
     }
   };
 
-  console.log(user.photoURL);
-
   return (
     <div>
       <div className="flex justify-center text-3xl py-20">
