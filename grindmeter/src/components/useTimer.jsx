@@ -1,5 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import { usePresetContext } from "../context/PresetContext";
+import db from "../firebase-config";
+import { collection, addDoc } from "firebase/firestore";
+
+async function addTimerData(s, e) {
+  try {
+    const docRef = await addDoc(collection(db, "TEST"), {
+      timer: {
+        startingTime: s, // This should be a Firestore Timestamp object.
+        endingTime: e, // This should be a Firestore Timestamp object.
+        overall: s - e,
+      },
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (error) {
+    console.error("Error adding document: ", error);
+  }
+}
 
 export default function useTimer(duration, isRunning, reset) {
   const { presets } = usePresetContext();
@@ -11,15 +28,12 @@ export default function useTimer(duration, isRunning, reset) {
   const shouldReset = useRef(true);
   const prevResetVal = useRef(reset);
   const prevDurationVal = useRef(duration);
+  const startTimeRef = useRef(null);
 
   // Changes running state if prop changes (unpaused or paused)
   useEffect(() => setRunning(isRunning), [isRunning]);
 
   useEffect(() => {
-    /*
-    Checks if the timer should be reset if the presets change.
-    - It should be reset if the preset changed is the one being used.
-    */
     presets.forEach((element, index) => {
       // Finds the index of the preset that changed, and compares that index to the current preset being used
       if (element !== oldPresets.current[index] && index !== duration) {
@@ -32,10 +46,6 @@ export default function useTimer(duration, isRunning, reset) {
 
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
-    /*
-    Checks if it can be reset, if the reset or different preset button is pushed it overrides and resets anyways.
-    - Note that the prop reset is a number, not a boolean. 
-    */
     if (
       shouldReset.current ||
       reset > prevResetVal.current ||
@@ -54,6 +64,7 @@ export default function useTimer(duration, isRunning, reset) {
 
   useEffect(() => {
     if (running) {
+      startTimeRef.current = Date.now();
       const startingTime = Date.now();
 
       intervalRef.current = setInterval(() => {
@@ -67,9 +78,14 @@ export default function useTimer(duration, isRunning, reset) {
 
         if (remainingTime <= 0) {
           clearInterval(intervalRef.current);
+          // addTimerData(startTimeRef.current, Date.now());
         }
       }, 100);
     } else {
+      // FIGURE OUT A WAY TO ADD DATA ONCE TIMER IS DONE
+      // if (startTimeRef.current && time > 0) {
+      //   addTimerData(startTimeRef.current, Date.now());
+      // }
       clearInterval(intervalRef.current);
       remainingTimeRef.current = time;
     }
