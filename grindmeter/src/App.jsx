@@ -3,6 +3,7 @@ import { createRoutesFromElements } from "react-router-dom";
 import { PresetProvider } from "./context/PresetContext";
 import { useEffect } from "react";
 import { AuthContextProvider } from "./context/AuthContext";
+import { CategoryProvider } from "./context/CategoryContext";
 
 import "./App.css";
 
@@ -16,11 +17,13 @@ const router = createBrowserRouter(
     <Route
       path="/"
       element={
-        <AuthContextProvider>
-          <PresetProvider>
-            <RootLayout />
-          </PresetProvider>
-        </AuthContextProvider>
+        <CategoryProvider>
+          <AuthContextProvider>
+            <PresetProvider>
+              <RootLayout />
+            </PresetProvider>
+          </AuthContextProvider>
+        </CategoryProvider>
       }
     >
       <Route index element={<Home />} />

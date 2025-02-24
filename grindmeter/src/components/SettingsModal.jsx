@@ -1,12 +1,16 @@
 import { IoSettingsOutline } from "react-icons/io5";
-import { useState, useEffect } from "react";
+import { IoIosLock } from "react-icons/io";
 import { usePresetContext } from "../context/PresetContext";
 import TimerInput from "./TimerInput";
 import VolumeSlider from "./VolumeSlider";
+import AddCategoryField from "./AddCategoryField";
+import { UserAuth } from "../context/AuthContext";
 
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
+
+  const { googleSignIn, user, logOut } = UserAuth();
 
   let lastUsedIndex = 0;
 
@@ -76,6 +80,41 @@ function SettingsModal({ open, onClose }) {
             </div>
             <h2 className="text-customGreen-100 block font-medium">Ringtone</h2>
             <VolumeSlider />
+
+            <h2 className="text-customGreen-100 block font-medium h-10">
+              {user ? (
+                <p>Work Categories</p>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <span>Work Categories</span>
+                    <IoIosLock className="w-5 h-5" />
+                  </div>
+                </>
+              )}
+            </h2>
+            <div>
+              {user ? (
+                <>
+                  <h3 className="text-customGreen-200 block font-medium text-sm ">
+                    Add Category
+                  </h3>
+                  <div>
+                    <AddCategoryField />
+                  </div>
+                  <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
+                    Modify Category
+                  </h3>
+                  <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
+                    Delete Category
+                  </h3>{" "}
+                </>
+              ) : (
+                <p className="text-customGreen-200 text-center text-sm">
+                  Must be logged in to use this feature.
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

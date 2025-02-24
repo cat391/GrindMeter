@@ -7,8 +7,8 @@ async function addTimerData(s, e) {
   try {
     const docRef = await addDoc(collection(db, "TEST"), {
       timer: {
-        startingTime: s, // This should be a Firestore Timestamp object.
-        endingTime: e, // This should be a Firestore Timestamp object.
+        startingTime: s,
+        endingTime: e,
         overall: s - e,
       },
     });
