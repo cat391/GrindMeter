@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useCategoryContext } from "../context/CategoryContext";
 import { UserAuth } from "../context/AuthContext";
 import db from "../firebase-config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
 
 async function checkForUserEmail(userEmail) {}
 
@@ -15,16 +15,29 @@ export default function AddCategoryField() {
   // Check if user has created a category before by checking all emails in the categories firestore
   const checkForUserEmail = async (userEmail) => {
     try {
-      const querySnapshot = await getDocs(collection(db, "userEmails"));
-      querySnapshot.forEach((doc) => {
-        const userData = doc.data();
-        if (userData === userEmail) {
-          useState(false);
-          console.log("adssf");
-        }
-      });
+      const q = query(
+        collection(db, "categories"),
+        where("userEmail", "==", userEmail)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setFirstCreation(false);
+      }
     } catch (error) {
       console.log("Error fetching documents: ", error);
+    }
+  };
+
+  const createCategoriesForUse = async (userEmail) => {
+    try {
+      await addDoc(collection(db, "categories"), {
+        userEmail: userEmail,
+        categories: ["None"],
+      });
+      console.log("Created categories for ", userEmail);
+    } catch (error) {
+      console.log("Error adding document: ", error);
     }
   };
 
@@ -34,9 +47,9 @@ export default function AddCategoryField() {
     await checkForUserEmail(user.email);
 
     // If user has not created a category yet, create categories for user in the categories firestore
-
     if (firstCreation) {
-      console.log("First creation!");
+      await createCategoriesForUse(user.email);
+      setFirstCreation(false);
     } else {
       console.log("Have already created");
     }
