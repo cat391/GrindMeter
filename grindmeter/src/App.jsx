@@ -17,13 +17,13 @@ const router = createBrowserRouter(
     <Route
       path="/"
       element={
-        <CategoryProvider>
-          <AuthContextProvider>
+        <AuthContextProvider>
+          <CategoryProvider>
             <PresetProvider>
               <RootLayout />
             </PresetProvider>
-          </AuthContextProvider>
-        </CategoryProvider>
+          </CategoryProvider>
+        </AuthContextProvider>
       }
     >
       <Route index element={<Home />} />

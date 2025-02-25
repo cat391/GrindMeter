@@ -1,4 +1,7 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+import { UserAuth } from "./AuthContext";
+import db from "../firebase-config";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const CategoryContext = createContext();
 
