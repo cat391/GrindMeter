@@ -2,9 +2,15 @@ import { useState } from "react";
 import { useCategoryContext } from "../context/CategoryContext";
 import { UserAuth } from "../context/AuthContext";
 import db from "../firebase-config";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
-
-async function checkForUserEmail(userEmail) {}
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+  arrayUnion,
+} from "firebase/firestore";
 
 export default function AddCategoryField() {
   const [category, setCategory] = useState("");
@@ -12,47 +18,40 @@ export default function AddCategoryField() {
   const [firstCreation, setFirstCreation] = useState(true);
   const { user } = UserAuth();
 
-  // Check if user has created a category before by checking all emails in the categories firestore
-  const checkForUserEmail = async (userEmail) => {
+  const updateData = async (userEmail, newData) => {
     try {
+      // Query for the document ID
       const q = query(
         collection(db, "categories"),
         where("userEmail", "==", userEmail)
       );
       const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        setFirstCreation(false);
+      // Checks if userEmail is found
+      if (querySnapshot.empty) {
+        console.log("No document found with the specified field value.");
+        return;
       }
-    } catch (error) {
-      console.log("Error fetching documents: ", error);
-    }
-  };
 
-  const createCategoriesForUse = async (userEmail) => {
-    try {
-      await addDoc(collection(db, "categories"), {
-        userEmail: userEmail,
-        categories: ["None"],
+      // Get the document ID
+      const docId = querySnapshot.docs[0].id;
+
+      // Update document
+      const docRef = doc(db, "categories", docId);
+      await updateDoc(docRef, {
+        categories: arrayUnion(newData),
       });
-      console.log("Created categories for ", userEmail);
+      console.log("Categories updated successfully");
+      setCategory("");
     } catch (error) {
-      console.log("Error adding document: ", error);
+      console.log("Error updating document: ", error);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await checkForUserEmail(user.email);
-
-    // If user has not created a category yet, create categories for user in the categories firestore
-    if (firstCreation) {
-      await createCategoriesForUse(user.email);
-      setFirstCreation(false);
-    } else {
-      console.log("Have already created");
-    }
+    await updateData(user.email, category);
 
     // setCategories([...categories, category]);
     // setCategory("");
