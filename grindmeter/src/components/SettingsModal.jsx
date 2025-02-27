@@ -6,6 +6,7 @@ import VolumeSlider from "./VolumeSlider";
 import AddCategoryField from "./AddCategoryField";
 import { UserAuth } from "../context/AuthContext";
 import { ModifyCategoryField } from "./ModifyCategoryField";
+import DeleteCategoryField from "./DeleteCategoryField";
 
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
@@ -112,6 +113,9 @@ function SettingsModal({ open, onClose }) {
                   <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
                     Delete Category
                   </h3>{" "}
+                  <div>
+                    <DeleteCategoryField />
+                  </div>
                 </>
               ) : (
                 <p className="text-customGreen-200 text-center text-sm">

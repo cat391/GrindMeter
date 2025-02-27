@@ -1,4 +1,3 @@
-import { IoHandLeft } from "react-icons/io5";
 import { useCategoryContext } from "../context/CategoryContext";
 import { useState, useEffect } from "react";
 import { UserAuth } from "../context/AuthContext";
@@ -11,26 +10,17 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-export function ModifyCategoryField() {
+export default function DeleteCategoryField() {
   const { categories, setCategories } = useCategoryContext();
   const [selectedValue, setSelectedValue] = useState("");
-  const [category, setCategory] = useState(selectedValue);
   const { user } = UserAuth();
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
   };
 
-  const handleValueChange = (e) => {
-    if (selectedValue !== "") {
-      setCategory(e.target.value);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (category === "") return; // User cannot modify a category into a blank string
+  const handleRemove = async () => {
+    if (selectedValue === "") return; // User cannot remove the default dropdown option
 
     try {
       // Query to find user's specific categories with their email
@@ -59,34 +49,32 @@ export function ModifyCategoryField() {
         return;
       }
 
-      // Updates the categories in firestore array accordingly
-      const updatedCategories = [...userData.categories];
-      updatedCategories[indexToUpdate] = category;
+      // Removes the category from the array
+      let updatedCategories = [...userData.categories];
+      updatedCategories = updatedCategories.filter(
+        (item) => item !== selectedValue
+      );
 
       await updateDoc(userDoc.ref, {
         categories: updatedCategories,
       });
 
-      console.log("Successfully updated category value");
+      console.log("Successfully removed category value");
 
       // Update the categories context to fit the new firestore data
       setCategories(updatedCategories);
     } catch (error) {
       console.log("Error updating array: ", error);
     }
+
+    console.log("Submitted");
   };
 
   // Updated the dropdown options when 'categories' changes
   useEffect(() => {
-    setCategory("");
     setSelectedValue("");
   }, [categories]);
 
-  useEffect(() => {
-    setCategory(selectedValue);
-  }, [selectedValue]);
-
-  // Fix this so it handles the case if no categories are added yet
   return (
     <div>
       <select value={selectedValue} onChange={handleDropdownChange}>
@@ -97,17 +85,9 @@ export function ModifyCategoryField() {
           </option>
         ))}
       </select>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Modify Category"
-          value={category}
-          onChange={handleValueChange}
-        ></input>
-        <button type="submit" className="text-white">
-          MODIFY
-        </button>
-      </form>
+      <button onClick={handleRemove} className="text-white">
+        REMOVE
+      </button>
     </div>
   );
 }

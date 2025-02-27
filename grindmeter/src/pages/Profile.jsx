@@ -1,6 +1,5 @@
 import { GoogleButton } from "react-google-button";
 import { UserAuth } from "../context/AuthContext";
-import TestImage from "../components/TestImage";
 import { useEffect, useState } from "react";
 import db from "../firebase-config";
 import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
