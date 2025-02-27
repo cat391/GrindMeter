@@ -5,6 +5,7 @@ import TimerInput from "./TimerInput";
 import VolumeSlider from "./VolumeSlider";
 import AddCategoryField from "./AddCategoryField";
 import { UserAuth } from "../context/AuthContext";
+import { ModifyCategoryField } from "./ModifyCategoryField";
 
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
@@ -105,6 +106,9 @@ function SettingsModal({ open, onClose }) {
                   <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
                     Modify Category
                   </h3>
+                  <div>
+                    <ModifyCategoryField />
+                  </div>
                   <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
                     Delete Category
                   </h3>{" "}
