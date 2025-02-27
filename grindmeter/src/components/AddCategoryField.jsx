@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 
 export default function AddCategoryField() {
+  const { categories, setCategories } = useCategoryContext();
   const [category, setCategory] = useState("");
   const { user } = UserAuth();
 
@@ -40,6 +41,9 @@ export default function AddCategoryField() {
         categories: arrayUnion(newData),
       });
       console.log("Categories updated successfully");
+
+      // Update the categories state to reflect the changes made
+      setCategories([...categories, category]);
       setCategory("");
     } catch (error) {
       console.log("Error updating document: ", error);
@@ -50,9 +54,6 @@ export default function AddCategoryField() {
     e.preventDefault();
 
     await updateData(user.email, category);
-
-    // setCategories([...categories, category]);
-    // setCategory("");
   };
 
   return (

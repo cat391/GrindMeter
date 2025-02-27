@@ -15,6 +15,7 @@ export function ModifyCategoryField() {
   const { categories, setCategories } = useCategoryContext();
   const [selectedValue, setSelectedValue] = useState("");
   const [category, setCategory] = useState(selectedValue);
+  const { user } = UserAuth();
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
@@ -29,12 +30,59 @@ export function ModifyCategoryField() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (category === "") return;
+    if (category === "") return; // User cannot modify a category into a blank string
 
-    const categoriesRef = collection(db, "categories");
+    try {
+      // Query to find user's specific categories with their email
+      const q = query(
+        collection(db, "categories"),
+        where("userEmail", "==", user.email)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      // Handle cases when user's categories cannot be found
+      if (querySnapshot.empty) {
+        console.log("No user found with email: ", user.email);
+        return;
+      }
+
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      // Gathers index of the category user wants to change
+      const indexToUpdate = userData.categories.indexOf(selectedValue);
+
+      // Handles cases when category user wants to change cannot be found
+      if (indexToUpdate === -1) {
+        console.log("No category found with name ", selectedValue);
+        return;
+      }
+
+      // Updates the categories in firestore array accordingly
+      const updatedCategories = [...userData.categories];
+      updatedCategories[indexToUpdate] = category;
+
+      await updateDoc(userDoc.ref, {
+        categories: updatedCategories,
+      });
+
+      console.log("Successfully updated category value");
+
+      // Update the categories context to fit the new firestore data
+      setCategories(updatedCategories);
+    } catch (error) {
+      console.log("Error updating array: ", error);
+    }
 
     console.log("Submitted");
   };
+
+  // Updated the dropdown options when 'categories' changes
+  useEffect(() => {
+    setCategory("");
+    setSelectedValue("");
+  }, [categories]);
 
   useEffect(() => {
     setCategory(selectedValue);
@@ -54,7 +102,7 @@ export function ModifyCategoryField() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Add Category"
+          placeholder="Modify Category"
           value={category}
           onChange={handleValueChange}
         ></input>
