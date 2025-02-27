@@ -1,6 +1,15 @@
 import { IoHandLeft } from "react-icons/io5";
 import { useCategoryContext } from "../context/CategoryContext";
 import { useState, useEffect } from "react";
+import { UserAuth } from "../context/AuthContext";
+import db from "../firebase-config";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 
 export function ModifyCategoryField() {
   const { categories, setCategories } = useCategoryContext();
@@ -12,7 +21,19 @@ export function ModifyCategoryField() {
   };
 
   const handleValueChange = (e) => {
-    setCategory(e.target.value);
+    if (selectedValue !== "") {
+      setCategory(e.target.value);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (category === "") return;
+
+    const categoriesRef = collection(db, "categories");
+
+    console.log("Submitted");
   };
 
   useEffect(() => {
@@ -30,12 +51,12 @@ export function ModifyCategoryField() {
           </option>
         ))}
       </select>
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Add Category"
           value={category}
-          onChange={handleDropdownChange}
+          onChange={handleValueChange}
         ></input>
         <button type="submit" className="text-white">
           MODIFY

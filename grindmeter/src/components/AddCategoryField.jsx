@@ -14,8 +14,6 @@ import {
 
 export default function AddCategoryField() {
   const [category, setCategory] = useState("");
-  const { categories, setCategories } = useCategoryContext();
-  const [firstCreation, setFirstCreation] = useState(true);
   const { user } = UserAuth();
 
   const updateData = async (userEmail, newData) => {
