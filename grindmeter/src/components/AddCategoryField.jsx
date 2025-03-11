@@ -11,6 +11,7 @@ import {
   doc,
   arrayUnion,
 } from "firebase/firestore";
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 export default function AddCategoryField() {
   const { categories, setCategories } = useCategoryContext();
@@ -58,17 +59,22 @@ export default function AddCategoryField() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        id="addCategory"
-        name="addCategory"
-        placeholder="Add Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-      ></input>
-      <button type="submit" className="text-white">
-        ADD
-      </button>
+      <div className="relative w-[200px]">
+        <input
+          className="bg-customBlack-300 px-3 py-2 outline-none w-full text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10"
+          type="text"
+          id="addCategory"
+          placeholder="Add Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#b7b7b7]"
+        >
+          <IoIosAddCircleOutline size={25} />
+        </button>
+      </div>
     </form>
   );
 }

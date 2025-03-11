@@ -9,6 +9,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
+import { MdOutlineChangeCircle } from "react-icons/md";
 
 export function ModifyCategoryField() {
   const { categories, setCategories } = useCategoryContext();
@@ -87,8 +88,12 @@ export function ModifyCategoryField() {
 
   // Fix this so it handles the case if no categories are added yet
   return (
-    <div>
-      <select value={selectedValue} onChange={handleDropdownChange}>
+    <div className="flex flex-col items-center justify-center">
+      <select
+        className="bg-customBlack-300 m-2 px-3 py-1 outline-none w-30 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10 appearance-none"
+        value={selectedValue}
+        onChange={handleDropdownChange}
+      >
         <option></option>
         {categories.slice(1).map((category, index) => (
           <option key={index} value={category}>
@@ -96,15 +101,19 @@ export function ModifyCategoryField() {
           </option>
         ))}
       </select>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="relative">
         <input
+          className="bg-customBlack-300 px-3 py-2 outline-none w-52 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-12"
           type="text"
           placeholder="Modify Category"
           value={category}
           onChange={handleValueChange}
-        ></input>
-        <button type="submit" className="text-white">
-          MODIFY
+        />
+        <button
+          type="submit"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#b7b7b7]"
+        >
+          <MdOutlineChangeCircle size={25} />
         </button>
       </form>
     </div>

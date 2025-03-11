@@ -31,109 +31,138 @@ function SettingsModal({ open, onClose }) {
       className={`fixed inset-0 flex justify-center items-center transition-colors ${
         open ? "visible bg-black/40" : "invisible"
       }`}
+      onClick={onClose}
     >
-      <div className="bg-customBlack-100 p-6 rounded-xl shadow-md border-2 border-customGreen-300 w-80">
-        <div className="flex justify-center mb-4 ">
-          <IoSettingsOutline size={30} className="text-customGreen-100" />
+      <div
+        className="bg-customBlack-100 rounded-xl shadow-md border-2 border-customGreen-300 w-80 max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-5 pb-2">
+          <div className="flex justify-center mb-2">
+            <IoSettingsOutline size={30} className="text-customGreen-100" />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-customGreen-100 block font-medium">
-              Custom Presets
-            </h2>
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-5 pb-2 custom-scrollbar">
+          <div className="space-y-5">
+            {/* Custom Presets Section */}
+            <section>
+              <h2 className="text-customGreen-100 font-medium mb-3">
+                Custom Presets
+              </h2>
 
-            <TimerInput />
+              <TimerInput />
 
-            <div className="flex justify-center gap-2 m-3">
-              <button
-                id="0"
-                className={
-                  presets.indexOf(currentPreset) !== 0
-                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
-                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
-                }
-                onClick={handleClick}
-              >
-                Preset 1
-              </button>
-              <button
-                id="1"
-                className={
-                  presets.indexOf(currentPreset) !== 1
-                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
-                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
-                }
-                onClick={handleClick}
-              >
-                Preset 2
-              </button>
-              <button
-                id="2"
-                className={
-                  presets.indexOf(currentPreset) !== 2
-                    ? "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-45 transition duration-100 ease-in-out transform hover:opacity-75"
-                    : "border-2 border-customGreen-300 text-customGreen-100 text-sm p-1 rounded-md opacity-100"
-                }
-                onClick={handleClick}
-              >
-                Preset 3
-              </button>
-            </div>
-            <h2 className="text-customGreen-100 block font-medium">Ringtone</h2>
-            <VolumeSlider />
+              <div className="flex justify-center gap-2 my-3">
+                {[0, 1, 2].map((index) => (
+                  <button
+                    key={index}
+                    id={index}
+                    className={`
+                      border-2 border-customGreen-300 text-customGreen-100 text-sm py-1 px-3 rounded-md
+                      transition duration-100 ease-in-out transform
+                      ${
+                        presets.indexOf(currentPreset) !== index
+                          ? "opacity-45 hover:opacity-75"
+                          : "opacity-100"
+                      }
+                    `}
+                    onClick={handleClick}
+                  >
+                    Preset {index + 1}
+                  </button>
+                ))}
+              </div>
+            </section>
 
-            <h2 className="text-customGreen-100 block font-medium h-10">
-              {user ? (
-                <p>Work Categories</p>
-              ) : (
-                <>
+            {/* Ringtone Section */}
+            <section>
+              <h2 className="text-customGreen-100 font-medium mb-2">
+                Ringtone
+              </h2>
+              <VolumeSlider />
+            </section>
+
+            {/* Work Categories Section */}
+            <section>
+              <h2 className="text-customGreen-100 font-medium mb-3">
+                {user ? (
+                  "Work Categories"
+                ) : (
                   <div className="flex items-center space-x-2">
                     <span>Work Categories</span>
                     <IoIosLock className="w-5 h-5" />
                   </div>
-                </>
-              )}
-            </h2>
-            <div>
+                )}
+              </h2>
+
               {user ? (
-                <>
-                  <h3 className="text-customGreen-200 block font-medium text-sm ">
-                    Add Category
-                  </h3>
+                <div className="space-y-4">
                   <div>
-                    <AddCategoryField />
+                    <h3 className="text-customGreen-200 font-medium text-sm mb-2">
+                      Add Category
+                    </h3>
+                    <div className="flex justify-center">
+                      <AddCategoryField />
+                    </div>
                   </div>
-                  <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
-                    Modify Category
-                  </h3>
+
                   <div>
-                    <ModifyCategoryField />
+                    <h3 className="text-customGreen-200 font-medium text-sm opacity-70 mb-2">
+                      Modify Category
+                    </h3>
+                    <div>
+                      <ModifyCategoryField />
+                    </div>
                   </div>
-                  <h3 className="text-customGreen-200 block font-medium text-sm opacity-70">
-                    Delete Category
-                  </h3>{" "}
+
                   <div>
-                    <DeleteCategoryField />
+                    <h3 className="text-customGreen-200 font-medium text-sm opacity-70 mb-2">
+                      Delete Category
+                    </h3>
+                    <div>
+                      <DeleteCategoryField />
+                    </div>
                   </div>
-                </>
+                </div>
               ) : (
-                <p className="text-customGreen-200 text-center text-sm">
-                  Must be logged in to use this feature.
-                </p>
+                <div className="bg-customBlack-200/50 p-3 rounded-md">
+                  <p className="text-customGreen-200 text-center text-sm">
+                    Must be logged in to use this feature.
+                  </p>
+                </div>
               )}
-            </div>
+            </section>
           </div>
         </div>
 
-        <hr className="my-4"></hr>
-        <button
-          onClick={handleClose}
-          className="border-2 border-customGreen-300 text-customGreen-200 p-2 rounded-md transition duration-300 ease-in-out transform hover:text-customGreen-100"
-        >
-          Close
-        </button>
+        {/* Fixed Footer */}
+        <div className="px-5 pb-5 pt-2 mt-auto">
+          <hr className="border-customGreen-300/20 mb-4" />
+          <button
+            onClick={handleClose}
+            className="w-full border-2 border-customGreen-300 text-customGreen-200 p-2 rounded-md 
+                     transition duration-300 ease-in-out transform hover:text-customGreen-100 hover:bg-customGreen-300/10"
+          >
+            Close
+          </button>
+        </div>
       </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(26, 95, 73, 0.5);
+          border-radius: 20px;
+        }
+      `}</style>
     </div>
   );
 }

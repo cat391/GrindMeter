@@ -9,6 +9,7 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 export default function DeleteCategoryField() {
   const { categories, setCategories } = useCategoryContext();
@@ -76,8 +77,12 @@ export default function DeleteCategoryField() {
   }, [categories]);
 
   return (
-    <div>
-      <select value={selectedValue} onChange={handleDropdownChange}>
+    <div className="flex items-center justify-center gap-2">
+      <select
+        className="bg-customBlack-300 px-3 py-2 outline-none w-32 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10"
+        value={selectedValue}
+        onChange={handleDropdownChange}
+      >
         <option></option>
         {categories.slice(1).map((category, index) => (
           <option key={index} value={category}>
@@ -85,8 +90,11 @@ export default function DeleteCategoryField() {
           </option>
         ))}
       </select>
-      <button onClick={handleRemove} className="text-white">
-        REMOVE
+      <button
+        onClick={handleRemove}
+        className="text-[#b7b7b7] hover:text-[#ff4d4d] transition-colors duration-100"
+      >
+        <FaRegTrashAlt />
       </button>
     </div>
   );
