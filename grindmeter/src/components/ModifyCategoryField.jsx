@@ -1,4 +1,3 @@
-import { IoHandLeft } from "react-icons/io5";
 import { useCategoryContext } from "../context/CategoryContext";
 import { useState, useEffect } from "react";
 import { UserAuth } from "../context/AuthContext";
