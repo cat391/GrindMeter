@@ -4,7 +4,6 @@ import PresetButton from "../components/PresetButton";
 import "../App.css";
 import { BiPause, BiReset, BiPlay } from "react-icons/bi";
 import { usePresetContext } from "../context/PresetContext";
-import CategoryComponent from "../components/CategoryComponent";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
@@ -63,9 +62,8 @@ export default function Home() {
           );
         })}
       </div>
-      {/* <div className="flex justify-center items-center h-20 ">
-        <CategoryComponent />
-      </div> */}
+      <div className="flex justify-center"></div>
+
       <div className="flex space-x-4 justify-center items-center h-40">
         <button
           className="cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg

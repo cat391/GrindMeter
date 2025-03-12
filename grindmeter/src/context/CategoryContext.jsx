@@ -12,6 +12,7 @@ export function useCategoryContext() {
 export function CategoryProvider({ children }) {
   const { user } = UserAuth();
   const [categories, setCategories] = useState([]);
+  const [currentCategory, setCurrentCategory] = useState("");
 
   const updateCategories = async (userEmail) => {
     const categoriesRef = collection(db, "categories");
@@ -44,6 +45,8 @@ export function CategoryProvider({ children }) {
       value={{
         categories,
         setCategories,
+        currentCategory,
+        setCurrentCategory,
       }}
     >
       {children}

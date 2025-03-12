@@ -2,7 +2,15 @@ import { GoogleButton } from "react-google-button";
 import { UserAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
 import db from "../firebase-config";
-import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -39,7 +47,7 @@ export default function Login() {
     }
   };
 
-  const createCategoriesForUse = async (userEmail) => {
+  const createCategoriesForUser = async (userEmail) => {
     try {
       await addDoc(collection(db, "categories"), {
         userEmail: userEmail,
@@ -51,13 +59,28 @@ export default function Login() {
     }
   };
 
+  const createTimerDataForUser = async (userEmail) => {
+    try {
+      const userRef = doc(db, "timerData", userEmail);
+
+      await setDoc(userRef, {
+        userEmail: userEmail,
+      });
+
+      console.log("Create timerData for ", userEmail);
+    } catch (error) {
+      console.log("Error creating document: ", error);
+    }
+  };
+
   useEffect(() => {
     // Check if user has their databases created
     const initializeUserData = async () => {
       if (user && user.email) {
         const userExists = await checkForUserEmail(user.email);
         if (!userExists) {
-          await createCategoriesForUse(user.email);
+          await createCategoriesForUser(user.email);
+          await createTimerDataForUser(user.email);
           console.log("Create categories for ", user.email);
         }
       }
