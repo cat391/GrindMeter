@@ -4,11 +4,11 @@ import PresetButton from "../components/PresetButton";
 import "../App.css";
 import { BiPause, BiReset, BiPlay } from "react-icons/bi";
 import { usePresetContext } from "../context/PresetContext";
+import CategoryComponent from "../components/CategoryComponent";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
-  const { presets, setPresets, currentPreset, setCurrentPreset } =
-    usePresetContext();
+  const { presets } = usePresetContext();
   const [displayedTime, setDisplayedTime] = useState(0);
   const [shouldReset, setShouldReset] = useState(0);
   const oldPresets = useRef(presets);
@@ -35,7 +35,6 @@ export default function Home() {
     });
 
     if (shouldResetTimer) {
-      console.log("TS RAN PMO");
       resetTimer();
     }
     oldPresets.current = presets;
@@ -62,7 +61,9 @@ export default function Home() {
           );
         })}
       </div>
-      <div className="flex justify-center"></div>
+      <div className="flex justify-center m-10">
+        <CategoryComponent />
+      </div>
 
       <div className="flex space-x-4 justify-center items-center h-40">
         <button

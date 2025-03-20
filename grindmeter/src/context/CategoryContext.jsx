@@ -12,7 +12,7 @@ export function useCategoryContext() {
 export function CategoryProvider({ children }) {
   const { user } = UserAuth();
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentCategory, setCurrentCategory] = useState("None");
 
   const updateCategories = async (userEmail) => {
     const categoriesRef = collection(db, "categories");

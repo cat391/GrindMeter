@@ -86,11 +86,10 @@ export function ModifyCategoryField() {
     setCategory(selectedValue);
   }, [selectedValue]);
 
-  // Fix this so it handles the case if no categories are added yet
   return (
     <div className="flex flex-col items-center justify-center">
       <select
-        className="bg-customBlack-300 opacity-75 m-2 px-3 py-1 outline-none w-30 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10 appearance-none"
+        className="bg-customBlack-300 opacity-75 m-2 px-3 py-1 outline-none w-28 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10 appearance-none"
         value={selectedValue}
         onChange={handleDropdownChange}
       >

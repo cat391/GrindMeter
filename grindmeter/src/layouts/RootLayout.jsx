@@ -8,7 +8,7 @@ export default function RootLayout() {
 
   return (
     <div>
-      <header className="h-14 w-full text-white sticky top-0 z-10">
+      <header className="h-14 w-full text-white z-10">
         <section className="h-full flex justify-between items-center">
           <nav className="space-x-8 text-lg mx-auto">
             <NavLink
