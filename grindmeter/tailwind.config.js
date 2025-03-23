@@ -16,6 +16,15 @@ export default {
           400: "#d8d8d8",
         },
       },
+      keyframes: {
+        shine: {
+          "0%": { "background-position": "100%" },
+          "100%": { "background-position": "-100%" },
+        },
+      },
+      animation: {
+        shine: "shine 5s linear infinite",
+      },
     },
   },
   plugins: [],

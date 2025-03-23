@@ -11,9 +11,19 @@ import {
   setDoc,
 } from "firebase/firestore";
 import Squares from "../blocks/Backgrounds/Squares/Squares";
+import BlurText from "../blocks/TextAnimations/BlurText/BlurText";
+import { useSpring, animated } from "@react-spring/web";
+import ShinyText from "../blocks/TextAnimations/ShinyText/ShinyText";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
+  const [blurAnimationComplete, setBlurAnimationComplete] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const loginSpring = useSpring({
+    opacity: blurAnimationComplete ? 1 : 0,
+    transform: blurAnimationComplete ? "translateY(0)" : "translateY(10px)",
+    config: { tension: 120, friction: 14 },
+  });
 
   const handleGoogleSignIn = async () => {
     try {
@@ -73,6 +83,15 @@ export default function Login() {
     }
   };
 
+  // Handlers for sign in page
+
+  const handleBlurAnimationComplete = () => {
+    setTimeout(() => {
+      setBlurAnimationComplete(true);
+      console.log("complete");
+    }, 250);
+  };
+
   useEffect(() => {
     // Check if user has their databases created
     const initializeUserData = async () => {
@@ -91,19 +110,29 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden">
-      {/* Background Squares */}
       <div className="absolute top-0 left-0 w-full h-full">
         <Squares
-          direction="up"
-          speed={1}
-          borderColor="#707070"
-          squareSize={45}
+          direction="diagonal"
+          speed={0.25}
+          borderColor="#23a946"
+          squareSize={60}
           hoverFillColor="#222"
         />
       </div>
-      {/* Foreground Card */}
-      <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-300 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center">
+      <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
+        <div className="absolute top-32 left-0 w-full flex justify-center">
+          <BlurText
+            text="Start your grind."
+            delay={100}
+            animateBy="words"
+            direction="top"
+            onAnimationComplete={handleBlurAnimationComplete}
+            className="text-6xl"
+            highlightWord="grind."
+            highlightClassName="text-customGreen-100"
+          />
+        </div>
+        <div className="mt-24 flex flex-col items-center">
           <div className="text-3xl py-8">
             {user && (
               <h1 className="text-customGreen-100">
@@ -111,8 +140,7 @@ export default function Login() {
               </h1>
             )}
           </div>
-
-          <div className="py-8 font-size-10 text-lg">
+          <div className="py-8 text-lg">
             {user?.displayName ? (
               <button
                 onClick={handleSignOut}
@@ -122,8 +150,36 @@ export default function Login() {
               </button>
             ) : (
               <div>
-                <h1 className="text-4xl">Sign In</h1>
-                <button onClick={handleGoogleSignIn}>Google</button>
+                <div></div>
+                {blurAnimationComplete && (
+                  <animated.div
+                    style={loginSpring}
+                    className="flex flex-col items-center"
+                  >
+                    <button
+                      className="text-customGreen-100 m-20 text-3xl p-7"
+                      onClick={handleGoogleSignIn}
+                      onMouseEnter={() => setHovered(true)}
+                      onMouseLeave={() => setHovered(false)}
+                    >
+                      {hovered ? (
+                        <ShinyText
+                          text="Login with Google"
+                          disabled={false}
+                          speed={0.5}
+                          color="text-customGreen-300"
+                        />
+                      ) : (
+                        <ShinyText
+                          text="Login with Google"
+                          disabled={false}
+                          speed={3}
+                          className="custom-class"
+                        />
+                      )}
+                    </button>
+                  </animated.div>
+                )}
               </div>
             )}
           </div>

@@ -33,6 +33,7 @@ export default function RootLayout() {
           </nav>
         </section>
       </header>
+      <hr className="border-customBlack-200 border-t-2"></hr>
 
       <main>
         <SettingsModal open={open} onClose={() => setOpen(false)} />
