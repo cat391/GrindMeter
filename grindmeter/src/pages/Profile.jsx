@@ -120,18 +120,6 @@ export default function Login() {
         />
       </div>
       <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
-        <div className="absolute top-32 left-0 w-full flex justify-center">
-          <BlurText
-            text="Start your grind."
-            delay={100}
-            animateBy="words"
-            direction="top"
-            onAnimationComplete={handleBlurAnimationComplete}
-            className="text-6xl"
-            highlightWord="grind."
-            highlightClassName="text-customGreen-100"
-          />
-        </div>
         <div className="mt-24 flex flex-col items-center">
           <div className="text-3xl py-8">
             {user && (
@@ -150,33 +138,33 @@ export default function Login() {
               </button>
             ) : (
               <div>
-                <div></div>
+                <div className="absolute top-32 left-0 w-full flex justify-center">
+                  <BlurText
+                    text="Start your grind."
+                    delay={100}
+                    animateBy="words"
+                    direction="top"
+                    onAnimationComplete={handleBlurAnimationComplete}
+                    className="text-6xl"
+                    highlightWord="grind."
+                    highlightClassName="text-customGreen-100"
+                  />
+                </div>
                 {blurAnimationComplete && (
                   <animated.div
                     style={loginSpring}
                     className="flex flex-col items-center"
                   >
                     <button
-                      className="text-customGreen-100 m-20 text-3xl p-7"
                       onClick={handleGoogleSignIn}
-                      onMouseEnter={() => setHovered(true)}
-                      onMouseLeave={() => setHovered(false)}
+                      className="group text-customGreen-100 m-20 text-3xl p-7"
                     >
-                      {hovered ? (
-                        <ShinyText
-                          text="Login with Google"
-                          disabled={false}
-                          speed={0.5}
-                          color="text-customGreen-300"
-                        />
-                      ) : (
-                        <ShinyText
-                          text="Login with Google"
-                          disabled={false}
-                          speed={3}
-                          className="custom-class"
-                        />
-                      )}
+                      <ShinyText
+                        text="Login with Google"
+                        disabled={false}
+                        speed={3}
+                        className="custom-class group-hover:text-customGreen-300"
+                      />
                     </button>
                   </animated.div>
                 )}
