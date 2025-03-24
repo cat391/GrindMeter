@@ -14,6 +14,7 @@ import Squares from "../blocks/Backgrounds/Squares/Squares";
 import BlurText from "../blocks/TextAnimations/BlurText/BlurText";
 import { useSpring, animated } from "@react-spring/web";
 import ShinyText from "../blocks/TextAnimations/ShinyText/ShinyText";
+import LineGraph from "../components/LineGraph";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -130,12 +131,18 @@ export default function Login() {
           </div>
           <div className="py-8 text-lg">
             {user?.displayName ? (
-              <button
-                onClick={handleSignOut}
-                className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
-              >
-                Log out
-              </button>
+              <>
+                <div>
+                  <LineGraph userEmail="cat081011@gmail.com" />
+                </div>
+
+                <button
+                  onClick={handleSignOut}
+                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+                >
+                  Log out
+                </button>
+              </>
             ) : (
               <div>
                 <div className="absolute top-32 left-0 w-full flex justify-center">
@@ -157,7 +164,7 @@ export default function Login() {
                   >
                     <button
                       onClick={handleGoogleSignIn}
-                      className="group text-customGreen-100 m-20 text-3xl p-7"
+                      className="group text-customGreen-100 m-20 text-3xl p-1"
                     >
                       <ShinyText
                         text="Login with Google"
