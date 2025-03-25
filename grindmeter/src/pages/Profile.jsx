@@ -122,26 +122,28 @@ export default function Login() {
       </div>
       <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
         <div className="mt-24 flex flex-col items-center">
-          <div className="text-3xl py-8">
-            {user && (
-              <h1 className="text-customGreen-100">
+          {user && (
+            <div className="absolute top-8 left-8">
+              {" "}
+              {/* Adjust 8 to match your card's padding */}
+              <h1 className="text-customGreen-100 text-3xl">
                 {user.displayName}'s Data
               </h1>
-            )}
-          </div>
+              <button
+                onClick={handleSignOut}
+                className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+              >
+                Log out
+              </button>
+            </div>
+          )}
+
           <div className="py-8 text-lg">
             {user?.displayName ? (
               <>
-                <div>
+                <div className="absolute left-8 bottom-9 w-1/2 h-[70%] min-h-[300px]">
                   <LineGraph userEmail="cat081011@gmail.com" />
                 </div>
-
-                <button
-                  onClick={handleSignOut}
-                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
-                >
-                  Log out
-                </button>
               </>
             ) : (
               <div>

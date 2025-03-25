@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import db from "../firebase-config";
 import { Line } from "react-chartjs-2";
 import {
@@ -27,13 +27,25 @@ ChartJS.register(
   TimeScale
 );
 
-const LineGraph = ({ userEmail }) => {
+const MonthLineGraph = ({ userEmail }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
+    if (!userEmail) return;
+
+    // Collect information about the month
+    const now = new Date();
+    const currentMonthYear = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, "0")}`;
+
     // Reference to the "timerUse" subcollection for a given user
     const timerUseRef = collection(db, "timerData", userEmail, "timerUse");
-    const q = query(timerUseRef);
+    const q = query(
+      timerUseRef,
+      where("date", ">=", `${currentMonthYear}-01`), // First day of month (e.g., "2024-01-01")
+      where("date", "<=", `${currentMonthYear}-31`) // Last day of month (e.g., "2024-01-31")
+    );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       // Group data by category
       const categoryData = {};
@@ -43,14 +55,17 @@ const LineGraph = ({ userEmail }) => {
         const category = docData.category; // e.g., "None", "Work", etc.
         // Convert the date string to a Date object
         const date = new Date(docData.date);
-        const duration = docData.duration;
+        const duration = Math.floor(docData.duration / 60);
 
         // Initialize the category array if needed
         if (!categoryData[category]) {
           categoryData[category] = [];
         }
         // Store the point in { x: date, y: duration } format
-        categoryData[category].push({ x: date, y: duration });
+        if (duration > 1) {
+          // Don't display if numbers are insignificant (less than a minute)
+          categoryData[category].push({ x: date, y: duration });
+        }
       });
 
       // Build datasets array, one per category
@@ -88,6 +103,7 @@ const LineGraph = ({ userEmail }) => {
   // Chart options with a time scale for the x-axis
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         type: "time",
@@ -97,29 +113,38 @@ const LineGraph = ({ userEmail }) => {
         title: {
           display: true,
           text: "Date",
+          color: "#ffffff",
         },
       },
       y: {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Duration",
+          text: "Duration (Minutes)",
+          color: "#ffffff",
         },
       },
     },
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          color: "#ffffff",
+        },
       },
       title: {
         display: true,
-        text: "Timer Data Timeline by Category",
+        text: "Timer Use (Month)",
+        color: "#ffffff",
       },
     },
   };
 
   return (
-    <div>
+    <div
+      className="bg-customBlack-200 rounded-lg p-4"
+      style={{ width: "100%", height: "55vh", minHeight: "400px" }}
+    >
       {chartData ? (
         <Line data={chartData} options={options} />
       ) : (
@@ -127,6 +152,15 @@ const LineGraph = ({ userEmail }) => {
       )}
     </div>
   );
+};
+
+const LineGraph = ({ userEmail, timeLine = "month" }) => {
+  switch (timeLine) {
+    case "month":
+      return <MonthLineGraph userEmail={userEmail} />;
+    default:
+      return null;
+  }
 };
 
 export default LineGraph;
