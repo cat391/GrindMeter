@@ -109,6 +109,13 @@ export default function Login() {
     initializeUserData();
   }, [user]);
 
+  // Handler for chart time dropdown
+  const [selectedValue, setSelectedValue] = useState("Month");
+
+  const handleDropdownChange = (e) => {
+    setSelectedValue(e.target.value);
+  };
+
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full">
@@ -123,26 +130,36 @@ export default function Login() {
       <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
         <div className="mt-24 flex flex-col items-center">
           {user && (
-            <div className="absolute top-8 left-8">
-              {" "}
-              {/* Adjust 8 to match your card's padding */}
-              <h1 className="text-customGreen-100 text-3xl">
-                {user.displayName}'s Data
-              </h1>
-              <button
-                onClick={handleSignOut}
-                className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
-              >
-                Log out
-              </button>
-            </div>
+            <>
+              <div className="absolute top-8 left-8">
+                <h1 className="text-customGreen-100 text-3xl">
+                  {user.displayName}'s Data
+                </h1>
+                <button
+                  onClick={handleSignOut}
+                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+                >
+                  Log out
+                </button>
+              </div>
+              <div className="absolute top-8 right-8 text-black">
+                <select value={selectedValue} onChange={handleDropdownChange}>
+                  <option>Week</option>
+                  <option>Month</option>
+                  <option>Year</option>
+                </select>
+              </div>
+            </>
           )}
 
           <div className="py-8 text-lg">
             {user?.displayName ? (
               <>
                 <div className="absolute left-8 bottom-9 w-1/2 h-[70%] min-h-[300px]">
-                  <LineGraph userEmail="cat081011@gmail.com" />
+                  <LineGraph
+                    userEmail="cat081011@gmail.com"
+                    timeLine={selectedValue}
+                  />
                 </div>
               </>
             ) : (

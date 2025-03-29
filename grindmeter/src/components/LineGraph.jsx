@@ -27,25 +27,61 @@ ChartJS.register(
   TimeScale
 );
 
-const MonthLineGraph = ({ userEmail }) => {
+const LineGraph = ({ userEmail, timeLine }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
     if (!userEmail) return;
 
-    // Collect information about the month
+    // Collect information about the week/month/year
     const now = new Date();
     const currentMonthYear = `${now.getFullYear()}-${String(
       now.getMonth() + 1
     ).padStart(2, "0")}`;
 
+    const currentYear = now.getFullYear();
+
     // Reference to the "timerUse" subcollection for a given user
     const timerUseRef = collection(db, "timerData", userEmail, "timerUse");
-    const q = query(
-      timerUseRef,
-      where("date", ">=", `${currentMonthYear}-01`), // First day of month (e.g., "2024-01-01")
-      where("date", "<=", `${currentMonthYear}-31`) // Last day of month (e.g., "2024-01-31")
-    );
+
+    let q;
+
+    switch (timeLine) {
+      case "Month":
+        q = query(
+          timerUseRef,
+          where("date", ">=", `${currentMonthYear}-01`), // First day of month (e.g., "2024-01-01")
+          where("date", "<=", `${currentMonthYear}-31`) // Last day of month (e.g., "2024-01-31")
+        );
+        break;
+      case "Year":
+        q = query(
+          timerUseRef,
+          where("date", ">=", `${currentYear}-01-01`),
+          where("date", "<=", `${currentYear}-12-31`)
+        );
+        break;
+      case "Week":
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
+        startOfWeek.setHours(0, 0, 0, 0); // Start of day (00:00:00)
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+        endOfWeek.setHours(23, 59, 59, 999); // End of day (23:59:59.999)
+        q = query(
+          timerUseRef,
+          where("date", ">=", startOfWeek.toISOString().split("T")[0]),
+          where("date", "<=", endOfWeek.toISOString().split("T")[0])
+        );
+        break;
+
+      default:
+        console.log(timeLine);
+        q = query(timerUseRef);
+    }
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       // Group data by category
       const categoryData = {};
@@ -98,7 +134,21 @@ const MonthLineGraph = ({ userEmail }) => {
     });
 
     return () => unsubscribe();
-  }, [userEmail]);
+  }, [userEmail, timeLine]);
+
+  function getStartOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Monday start
+    return new Date(d.setDate(diff));
+  }
+
+  function getEndOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() + (day === 0 ? 0 : 7 - day); // Adjust for Sunday end
+    return new Date(d.setDate(diff));
+  }
 
   // Chart options with a time scale for the x-axis
   const options = {
@@ -108,12 +158,27 @@ const MonthLineGraph = ({ userEmail }) => {
       x: {
         type: "time",
         time: {
-          unit: "day", // Adjust unit as needed (e.g., day, week, month)
+          unit: timeLine === "Month" || timeLine === "Week" ? "day" : "week", // Adjust unit as needed (e.g., day, week, month)
+          displayFormats: {
+            day: "MMM d",
+            week: "MMM d",
+          },
         },
+
         title: {
           display: true,
           text: "Date",
-          color: "#ffffff",
+          color: "#23a946",
+        },
+        grid: {
+          color: "#2D2D2D",
+          borderColor: "#2D2D2D",
+          tickColor: "#2D2D2D",
+        },
+        ticks: {
+          source: timeLine === "Week" ? "data" : "auto",
+          autoSkip: false,
+          color: "#136929",
         },
       },
       y: {
@@ -121,7 +186,15 @@ const MonthLineGraph = ({ userEmail }) => {
         title: {
           display: true,
           text: "Duration (Minutes)",
-          color: "#ffffff",
+          color: "#23a946",
+        },
+        grid: {
+          color: "#2D2D2D",
+          borderColor: "#2D2D2D",
+          tickColor: "#2D2D2D",
+        },
+        ticks: {
+          color: "#136929",
         },
       },
     },
@@ -130,12 +203,14 @@ const MonthLineGraph = ({ userEmail }) => {
         position: "top",
         labels: {
           color: "#ffffff",
+          borderColor: "#ffffff",
+          tickColor: "#ffffff",
         },
       },
       title: {
         display: true,
-        text: "Timer Use (Month)",
-        color: "#ffffff",
+        text: "Timer Use",
+        color: "#23a946",
       },
     },
   };
@@ -152,15 +227,6 @@ const MonthLineGraph = ({ userEmail }) => {
       )}
     </div>
   );
-};
-
-const LineGraph = ({ userEmail, timeLine = "month" }) => {
-  switch (timeLine) {
-    case "month":
-      return <MonthLineGraph userEmail={userEmail} />;
-    default:
-      return null;
-  }
 };
 
 export default LineGraph;
