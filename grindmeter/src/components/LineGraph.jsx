@@ -88,7 +88,8 @@ const LineGraph = ({ userEmail, timeLine }) => {
 
       snapshot.forEach((doc) => {
         const docData = doc.data();
-        const category = docData.category; // e.g., "None", "Work", etc.
+        const category =
+          docData.category === "None" ? "No Category" : docData.category;
         // Convert the date string to a Date object
         const date = new Date(docData.date);
         const duration = Math.floor(docData.duration / 60);
@@ -106,10 +107,16 @@ const LineGraph = ({ userEmail, timeLine }) => {
 
       // Build datasets array, one per category
       const colors = [
-        "rgba(75, 192, 192, 1)",
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 206, 86, 1)",
+        "#AAB2BD",
+        "#50C878",
+        "#98FF98",
+        "#7FFF00",
+        "#008080",
+        "#C4C3D0",
+        "#B2AC88",
+        "#C5D86D",
+        "#6E845C",
+        "#7BA23F",
       ];
       let colorIndex = 0;
       const datasets = Object.keys(categoryData).map((category) => {
@@ -171,14 +178,10 @@ const LineGraph = ({ userEmail, timeLine }) => {
           color: "#23a946",
         },
         grid: {
-          color: "#2D2D2D",
-          borderColor: "#2D2D2D",
-          tickColor: "#2D2D2D",
+          display: false,
         },
         ticks: {
-          source: timeLine === "Week" ? "data" : "auto",
-          autoSkip: false,
-          color: "#136929",
+          color: "#757575",
         },
       },
       y: {
@@ -189,12 +192,11 @@ const LineGraph = ({ userEmail, timeLine }) => {
           color: "#23a946",
         },
         grid: {
-          color: "#2D2D2D",
-          borderColor: "#2D2D2D",
-          tickColor: "#2D2D2D",
+          color: "#757575",
+          tickColor: "",
         },
         ticks: {
-          color: "#136929",
+          color: "#757575",
         },
       },
     },

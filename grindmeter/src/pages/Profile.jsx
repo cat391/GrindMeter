@@ -15,6 +15,7 @@ import BlurText from "../blocks/TextAnimations/BlurText/BlurText";
 import { useSpring, animated } from "@react-spring/web";
 import ShinyText from "../blocks/TextAnimations/ShinyText/ShinyText";
 import LineGraph from "../components/LineGraph";
+import PieGraph from "../components/PieGraph";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -154,14 +155,24 @@ export default function Login() {
 
           <div className="py-8 text-lg">
             {user?.displayName ? (
-              <>
-                <div className="absolute left-8 bottom-9 w-1/2 h-[70%] min-h-[300px]">
-                  <LineGraph
-                    userEmail="cat081011@gmail.com"
-                    timeLine={selectedValue}
-                  />
+              <div className="relative z-10 w-[1200px] h-[600px] max-h-[90vh] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl grid grid-rows-[auto_1fr]">
+                {/* Header content here */}
+
+                <div className="grid grid-cols-2 gap-4 h-full">
+                  <div className="relative">
+                    <LineGraph
+                      userEmail="cat081011@gmail.com"
+                      timeLine={selectedValue}
+                    />
+                  </div>
+                  <div className="relative">
+                    <PieGraph
+                      userEmail="cat081011@gmail.com"
+                      timeLine={selectedValue}
+                    />
+                  </div>
                 </div>
-              </>
+              </div>
             ) : (
               <div>
                 <div className="absolute top-32 left-0 w-full flex justify-center">
