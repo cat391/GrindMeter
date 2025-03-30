@@ -37,17 +37,14 @@ function SettingsModal({ open, onClose }) {
         className="bg-customBlack-100 rounded-xl shadow-md border-2 border-customGreen-300 w-80 max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="p-5 pb-2">
           <div className="flex justify-center mb-2">
             <IoSettingsOutline size={30} className="text-customGreen-100" />
           </div>
         </div>
 
-        {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto px-5 pb-2 custom-scrollbar">
           <div className="space-y-5">
-            {/* Custom Presets Section */}
             <section>
               <h2 className="text-customGreen-100 font-medium mb-3">
                 Custom Presets
@@ -77,15 +74,15 @@ function SettingsModal({ open, onClose }) {
               </div>
             </section>
 
-            {/* Ringtone Section */}
             <section>
               <h2 className="text-customGreen-100 font-medium mb-2">
                 Ringtone
               </h2>
               <VolumeSlider />
             </section>
+            <h2 className="text-customGreen-100 font-medium mb-2">Ambience</h2>
+            <section></section>
 
-            {/* Work Categories Section */}
             <section>
               <h2 className="text-customGreen-100 font-medium mb-3">
                 {user ? (

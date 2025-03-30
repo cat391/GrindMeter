@@ -134,11 +134,11 @@ export default function Login() {
             <>
               <div className="absolute top-8 left-8">
                 <h1 className="text-customGreen-100 text-3xl">
-                  {user.displayName}'s Data
+                  {user.displayName}'s Profile
                 </h1>
                 <button
                   onClick={handleSignOut}
-                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100 "
                 >
                   Log out
                 </button>
@@ -161,15 +161,12 @@ export default function Login() {
                 <div className="grid grid-cols-2 gap-4 h-full">
                   <div className="relative">
                     <LineGraph
-                      userEmail="cat081011@gmail.com"
+                      userEmail={user.email}
                       timeLine={selectedValue}
                     />
                   </div>
                   <div className="relative">
-                    <PieGraph
-                      userEmail="cat081011@gmail.com"
-                      timeLine={selectedValue}
-                    />
+                    <PieGraph userEmail={user.email} timeLine={selectedValue} />
                   </div>
                 </div>
               </div>

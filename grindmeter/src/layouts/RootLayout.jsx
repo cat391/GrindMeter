@@ -2,9 +2,11 @@ import { NavLink, Outlet } from "react-router-dom";
 import "../App.css";
 import { useState } from "react";
 import SettingsModal from "../components/SettingsModal";
+import { useLocation } from "react-router-dom";
 
 export default function RootLayout() {
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
 
   return (
     <div>
@@ -19,7 +21,11 @@ export default function RootLayout() {
             </NavLink>
             <button
               className="hover:opacity-60 transition-opacity ease-linear text-customGreen-100 font-semibold"
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                if (pathname !== "/profile") {
+                  setOpen(true);
+                }
+              }}
             >
               Settings
             </button>

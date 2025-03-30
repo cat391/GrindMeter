@@ -54,6 +54,8 @@ export default function AddCategoryField() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (category === "") return; // Cannot add an empty category
+
     await updateData(user.email, category);
   };
 

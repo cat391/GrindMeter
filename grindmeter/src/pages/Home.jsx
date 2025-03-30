@@ -49,6 +49,9 @@ export default function Home() {
           reset={shouldReset}
         />
       </h2>
+      <div className="flex justify-center m-7">
+        <CategoryComponent />
+      </div>
       <div className="flex space-x-4 justify-center items-center h-50">
         {[0, 1, 2].map((id) => {
           return (
@@ -60,9 +63,6 @@ export default function Home() {
             />
           );
         })}
-      </div>
-      <div className="flex justify-center m-10">
-        <CategoryComponent />
       </div>
 
       <div className="flex space-x-4 justify-center items-center h-40">
