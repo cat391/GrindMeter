@@ -17,6 +17,7 @@ import ShinyText from "../blocks/TextAnimations/ShinyText/ShinyText";
 import LineGraph from "../components/LineGraph";
 import PieGraph from "../components/PieGraph";
 import DeleteData from "../components/DeleteData";
+import DownloadComponent from "../components/DownloadComponent";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -147,6 +148,9 @@ export default function Login() {
                 </div>
                 <div>
                   <DeleteData />
+                </div>
+                <div>
+                  <DownloadComponent />
                 </div>
               </div>
               <div className="absolute top-8 right-8 text-black">
