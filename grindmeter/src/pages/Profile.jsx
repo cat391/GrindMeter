@@ -16,6 +16,7 @@ import { useSpring, animated } from "@react-spring/web";
 import ShinyText from "../blocks/TextAnimations/ShinyText/ShinyText";
 import LineGraph from "../components/LineGraph";
 import PieGraph from "../components/PieGraph";
+import DeleteData from "../components/DeleteData";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -132,16 +133,21 @@ export default function Login() {
         <div className="mt-24 flex flex-col items-center">
           {user && (
             <>
-              <div className="absolute top-8 left-8">
-                <h1 className="text-customGreen-100 text-3xl">
-                  {user.displayName}'s Profile
-                </h1>
-                <button
-                  onClick={handleSignOut}
-                  className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100 "
-                >
-                  Log out
-                </button>
+              <div className="absolute top-8 left-8 flex items-center gap-8">
+                <div>
+                  <h1 className="text-customGreen-100 text-3xl mb-4">
+                    {user.displayName}'s Profile
+                  </h1>
+                  <button
+                    onClick={handleSignOut}
+                    className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+                  >
+                    Log out
+                  </button>
+                </div>
+                <div>
+                  <DeleteData />
+                </div>
               </div>
               <div className="absolute top-8 right-8 text-black">
                 <select value={selectedValue} onChange={handleDropdownChange}>

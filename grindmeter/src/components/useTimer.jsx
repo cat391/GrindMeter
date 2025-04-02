@@ -1,26 +1,52 @@
 import { useState, useEffect, useRef } from "react";
 import { usePresetContext } from "../context/PresetContext";
 import db from "../firebase-config";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  where,
+  query,
+  getDocs,
+} from "firebase/firestore";
 import { useCategoryContext } from "../context/CategoryContext";
 import { UserAuth } from "../context/AuthContext";
 
 async function addTimerData(duration, currentCategory, user) {
-  if (!user) return; // Do not add data if user is not logged in
+  if (!user || !user.email) return; // Add additional check for email
 
   try {
-    // Add timer data to subcollection for user in timerData
-    const timerDataRef = collection(db, `timerData/${user.email}/timerUse`);
+    const currentDate = new Date().toISOString().split("T")[0];
+    const timerUseRef = collection(db, `timerData/${user.email}/timerUse`);
 
-    const docRef = await addDoc(timerDataRef, {
-      duration: Math.round(duration),
-      category: currentCategory,
-      date: new Date().toISOString().split("T")[0],
-    });
+    // Query for existing document with same category and date
+    const q = query(
+      timerUseRef,
+      where("category", "==", currentCategory),
+      where("date", "==", currentDate)
+    );
 
-    console.log("Document written with ID: ", docRef.id);
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      // Document exists - update duration
+      const docRef = querySnapshot.docs[0].ref;
+      const currentDuration = querySnapshot.docs[0].data().duration || 0;
+      await updateDoc(docRef, {
+        duration: currentDuration + Math.round(duration),
+      });
+      console.log("Document updated with ID: ", docRef.id);
+    } else {
+      // No matching document - create new one
+      const docRef = await addDoc(timerUseRef, {
+        duration: Math.round(duration),
+        category: currentCategory,
+        date: currentDate,
+      });
+      console.log("New document created with ID: ", docRef.id);
+    }
   } catch (error) {
-    console.error("Error adding document: ", error);
+    console.error("Error in addTimerData: ", error);
   }
 }
 
