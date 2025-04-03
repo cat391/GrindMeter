@@ -116,7 +116,7 @@ export default function DeleteData() {
           </div>
         </div>
       </div>
-      <div className="bg-customBlack-200 p-6 rounded-lg">
+      <div className="bg-customBlack-200 p-6 rounded-lg h-[120px]">
         <label className="block mb-3 font-medium">Delete Data</label>
         <div className="flex items-center space-x-2">
           <select

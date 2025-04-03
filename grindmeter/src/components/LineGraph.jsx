@@ -86,12 +86,17 @@ const LineGraph = ({ userEmail, timeLine }) => {
       // Group data by category
       const categoryData = {};
 
+      const parseDateString = (dateStr) => {
+        const [year, month, day] = dateStr.split("-").map(Number);
+        return new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // Noon UTC
+      };
+
       snapshot.forEach((doc) => {
         const docData = doc.data();
         const category =
           docData.category === "None" ? "No Category" : docData.category;
         // Convert the date string to a Date object
-        const date = new Date(docData.date);
+        const date = parseDateString(docData.date);
         const duration = Math.floor(docData.duration / 60);
 
         // Initialize the category array if needed
@@ -170,6 +175,9 @@ const LineGraph = ({ userEmail, timeLine }) => {
             day: "MMM d",
             week: "MMM d",
           },
+          stepSize: 1,
+          parser: "yyyy-MM-dd", // Explicitly specify the input format
+          tooltipFormat: "MMMM d, yyyy", // Format for tooltip display
         },
 
         title: {
@@ -218,10 +226,7 @@ const LineGraph = ({ userEmail, timeLine }) => {
   };
 
   return (
-    <div
-      className="bg-customBlack-200 rounded-lg p-4"
-      style={{ width: "100%", height: "55vh", minHeight: "400px" }}
-    >
+    <div className="bg-customBlack-200 rounded-lg p-4" style={{}}>
       {chartData ? (
         <Line data={chartData} options={options} />
       ) : (
