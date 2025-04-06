@@ -62,6 +62,7 @@ export default function useTimer(duration, isRunning, reset) {
   const shouldReset = useRef(true);
   const prevResetVal = useRef(reset);
   const prevDurationVal = useRef(duration);
+  const presetChanged = useRef(false);
 
   // Track timer session data
   const startTimeRef = useRef(null);
@@ -73,12 +74,16 @@ export default function useTimer(duration, isRunning, reset) {
   }, [isRunning]);
 
   useEffect(() => {
-    presets.forEach((element, index) => {
-      // Finds the index of the preset that changed, and compares that index to the current preset being used
-      if (element !== oldPresets.current[index] && index !== duration) {
-        shouldReset.current = false;
-      }
-    });
+    const didPresetChange = presets.some(
+      (element, index) =>
+        element !== oldPresets.current[index] && index !== duration
+    );
+
+    if (didPresetChange) {
+      shouldReset.current = false;
+    }
+
+    presetChanged.current = true;
 
     oldPresets.current = presets;
   }, [presets]);
@@ -92,7 +97,6 @@ export default function useTimer(duration, isRunning, reset) {
     ) {
       setTime(presets[duration]);
       remainingTimeRef.current = presets[duration];
-      console.log("triggered");
     } else {
       shouldReset.current = true;
     }
@@ -124,14 +128,18 @@ export default function useTimer(duration, isRunning, reset) {
         }
       }, 100);
     } else {
-      if (startTimeRef.current && time > 0) {
+      if (startTimeRef.current && time > 0 && !presetChanged.current) {
         const endTime = Date.now();
         const duration = (endTime - startTimeRef.current) / 1000;
 
+        // Issue is here
+
         addTimerData(duration, currentCategory, user);
       }
+
       clearInterval(intervalRef.current);
       remainingTimeRef.current = time;
+      presetChanged.current = false;
     }
 
     return () => {

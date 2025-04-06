@@ -154,7 +154,11 @@ export default function Login() {
                 </div>
               </div>
               <div className="absolute top-8 right-8 text-black">
-                <select value={selectedValue} onChange={handleDropdownChange}>
+                <select
+                  value={selectedValue}
+                  onChange={handleDropdownChange}
+                  className="bg-customBlack-300 px-3 py-1 outline-none w-28 text-md text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#7d808a] border-[#717171] pr-10 appearance-none"
+                >
                   <option>Week</option>
                   <option>Month</option>
                   <option>Year</option>

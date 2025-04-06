@@ -8,6 +8,7 @@ import {
   where,
   getDocs,
   writeBatch,
+  deleteDoc,
 } from "firebase/firestore";
 import { UserAuth } from "../context/AuthContext";
 import { IoIosClose } from "react-icons/io";

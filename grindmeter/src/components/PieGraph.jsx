@@ -143,7 +143,13 @@ const PieGraph = ({ userEmail, timeLine }) => {
   return (
     <div
       className="bg-customBlack-200 rounded-lg p-4"
-      style={{ width: "100%", height: "55vh", minHeight: "400px" }}
+      style={{
+        width: "100%",
+        height: "55vh",
+        minHeight: "400px",
+        maxHeight: "550px",
+        overflowX: "auto",
+      }}
     >
       {chartData ? (
         <Pie data={chartData} options={options} />

@@ -104,7 +104,7 @@ const LineGraph = ({ userEmail, timeLine }) => {
           categoryData[category] = [];
         }
         // Store the point in { x: date, y: duration } format
-        if (duration > 1) {
+        if (duration >= 1) {
           // Don't display if numbers are insignificant (less than a minute)
           categoryData[category].push({ x: date, y: duration });
         }
@@ -226,7 +226,15 @@ const LineGraph = ({ userEmail, timeLine }) => {
   };
 
   return (
-    <div className="bg-customBlack-200 rounded-lg p-4" style={{}}>
+    <div
+      className="bg-customBlack-200 rounded-lg p-4"
+      style={{
+        width: "100%",
+        height: "55vh",
+        maxHeight: "550px",
+        minHeight: "400px",
+      }}
+    >
       {chartData ? (
         <Line data={chartData} options={options} />
       ) : (
