@@ -111,24 +111,29 @@ const LineGraph = ({ userEmail, timeLine }) => {
       });
 
       // Build datasets array, one per category
-      const colors = [
-        "#AAB2BD",
+      const categoryColorMap = {
+        "No Category": "#AAB2BD",
+        // add more category→color overrides here
+      };
+      // 2) fallback palette for everything else:
+      const fallbackColors = [
         "#50C878",
         "#98FF98",
         "#7FFF00",
         "#008080",
-        "#C4C3D0",
+        "#248005",
         "#B2AC88",
         "#C5D86D",
         "#6E845C",
         "#7BA23F",
       ];
-      let colorIndex = 0;
-      const datasets = Object.keys(categoryData).map((category) => {
-        // Sort data points for each category by date
+
+      const categories = Object.keys(categoryData);
+      const datasets = categories.map((category, idx) => {
         const sortedData = categoryData[category].sort((a, b) => a.x - b.x);
-        const color = colors[colorIndex % colors.length];
-        colorIndex++;
+        const color =
+          categoryColorMap[category] ||
+          fallbackColors[idx % fallbackColors.length];
 
         return {
           label: category,
@@ -139,10 +144,7 @@ const LineGraph = ({ userEmail, timeLine }) => {
         };
       });
 
-      // Set the chart data; note we don't need a separate "labels" array when using {x, y} objects
-      setChartData({
-        datasets: datasets,
-      });
+      setChartData({ datasets });
     });
 
     return () => unsubscribe();

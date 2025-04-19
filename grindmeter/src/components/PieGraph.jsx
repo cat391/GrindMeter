@@ -76,25 +76,35 @@ const PieGraph = ({ userEmail, timeLine }) => {
       const categories = Object.keys(categoryTotals);
       const durations = Object.values(categoryTotals);
 
-      const backgroundColors = [
-        "#AAB2BD",
+      const categoryColorMap = {
+        "No Category": "#AAB2BD",
+      };
+
+      const fallbackColors = [
         "#50C878",
         "#98FF98",
         "#7FFF00",
         "#008080",
-        "#C4C3D0",
+        "#248005",
         "#B2AC88",
         "#C5D86D",
         "#6E845C",
         "#7BA23F",
       ];
 
+      // Ensures that "No Category" gets the grey color
+      const backgroundColors = categories.map((cat, i) => {
+        return (
+          categoryColorMap[cat] || fallbackColors[i % fallbackColors.length]
+        );
+      });
+
       setChartData({
         labels: categories,
         datasets: [
           {
             data: durations,
-            backgroundColor: backgroundColors.slice(0, categories.length),
+            backgroundColor: backgroundColors,
             borderColor: "#2D2D2D",
             borderWidth: 1,
           },
