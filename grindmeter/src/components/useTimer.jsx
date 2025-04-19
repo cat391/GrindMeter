@@ -63,6 +63,7 @@ export default function useTimer(duration, isRunning, reset) {
   const prevResetVal = useRef(reset);
   const prevDurationVal = useRef(duration);
   const presetChanged = useRef(false);
+  const finishedRef = useRef(false);
 
   // Track timer session data
   const startTimeRef = useRef(null);
@@ -107,6 +108,7 @@ export default function useTimer(duration, isRunning, reset) {
 
   useEffect(() => {
     if (running) {
+      finishedRef.current = false;
       startTimeRef.current = Date.now();
       const startingTime = Date.now();
 
@@ -123,16 +125,22 @@ export default function useTimer(duration, isRunning, reset) {
           clearInterval(intervalRef.current);
           const endTime = Date.now();
           const duration = (endTime - startTimeRef.current) / 1000;
+          finishedRef.current = false;
 
           addTimerData(duration, currentCategory, user);
+          console.log("add timer 1 ran");
         }
       }, 100);
     } else {
-      if (startTimeRef.current && time > 0 && !presetChanged.current) {
+      if (
+        startTimeRef.current &&
+        time > 0 &&
+        !presetChanged.curren &&
+        !finishedRef.current
+      ) {
         const endTime = Date.now();
         const duration = (endTime - startTimeRef.current) / 1000;
-
-        // Issue is here
+        finishedRef.current = true;
 
         addTimerData(duration, currentCategory, user);
       }

@@ -60,8 +60,6 @@ export default function DeleteData() {
   const [open, setOpen] = useState(false);
   const { user } = UserAuth();
 
-  console.log(user);
-
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
   };
@@ -132,6 +130,7 @@ export default function DeleteData() {
                 {category}
               </option>
             ))}
+            <option value="None">No Category</option>
           </select>
           <button
             className={`p-2 rounded-md ${
