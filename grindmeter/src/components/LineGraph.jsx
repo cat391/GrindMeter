@@ -231,10 +231,12 @@ const LineGraph = ({ userEmail, timeLine }) => {
     <div
       className="bg-customBlack-200 rounded-lg p-4"
       style={{
-        width: "100%",
         height: "55vh",
         maxHeight: "550px",
         minHeight: "400px",
+        width: "40vw",
+        minWidth: "300px",
+        maxWidth: "500px",
       }}
     >
       {chartData ? (

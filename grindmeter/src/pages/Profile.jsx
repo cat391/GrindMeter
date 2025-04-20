@@ -130,7 +130,7 @@ export default function Login() {
           hoverFillColor="#222"
         />
       </div>
-      <div className="relative z-10 w-[1200px] h-[600px] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[1200px] h-auto bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
         <div className="mt-24 flex flex-col items-center">
           {user && (
             <>
@@ -169,7 +169,7 @@ export default function Login() {
 
           <div className="py-8 text-lg">
             {user?.displayName ? (
-              <div className="relative z-10 w-[1200px] h-[600px] max-h-[90vh] bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl grid grid-rows-[auto_1fr]">
+              <div className="relative z-10 w-full max-w-[1200px] h-auto bg-customBlack-100 text-white rounded-2xl p-8 grid grid-rows-[auto_1fr]">
                 {/* Header content here */}
 
                 <div className="grid grid-cols-2 gap-4 h-full">
