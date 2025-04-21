@@ -45,6 +45,13 @@ export default function Login() {
     }
   };
 
+  // Change background to make sure it is the right color
+  useEffect(() => {
+    const cls = "bg-customBlack-100";
+    document.body.classList.add(cls);
+    return () => document.body.classList.remove(cls);
+  }, []);
+
   // Check if user has entered the firestore database by checking each email in the categories firestore
   const checkForUserEmail = async (userEmail) => {
     try {

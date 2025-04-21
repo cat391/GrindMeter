@@ -5,6 +5,10 @@ import "../App.css";
 import { BiPause, BiReset, BiPlay } from "react-icons/bi";
 import { usePresetContext } from "../context/PresetContext";
 import CategoryComponent from "../components/CategoryComponent";
+import { useAmbienceContext } from "../context/PresetContext";
+import { useCategoryContext } from "../context/CategoryContext";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import "../transition.css";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
@@ -12,6 +16,34 @@ export default function Home() {
   const [displayedTime, setDisplayedTime] = useState(0);
   const [shouldReset, setShouldReset] = useState(0);
   const oldPresets = useRef(presets);
+  const { visualAmbience } = useAmbienceContext();
+  const { currentCategory } = useCategoryContext();
+  const key = isOn && visualAmbience ? "AMB" : "CAT";
+  const content1 =
+    isOn && visualAmbience ? (
+      <div className="text-white font-bold">{currentCategory}</div>
+    ) : (
+      <div className="-z-10">
+        <CategoryComponent />
+      </div>
+    );
+  const content2 =
+    isOn && visualAmbience ? (
+      <div></div>
+    ) : (
+      <div className="flex space-x-4 justify-center items-center h-50">
+        {[0, 1, 2].map((id) => {
+          return (
+            <PresetButton
+              presets={presets}
+              key={id}
+              id={id}
+              onClick={() => handleTimerChange(id)}
+            />
+          );
+        })}
+      </div>
+    );
 
   const handleTimerChange = (id) => {
     setDisplayedTime(id);
@@ -40,6 +72,19 @@ export default function Home() {
     oldPresets.current = presets;
   }, [presets]); // Causes error if you change another preset than the one you are on
 
+  // Change background is visual ambience is turned on
+  useEffect(() => {
+    if (visualAmbience && isOn) {
+      const cls = "bg-customBlack-500";
+      document.body.classList.add(cls);
+      return () => document.body.classList.remove(cls);
+    } else {
+      const cls = "bg-customBlack-100";
+      document.body.classList.add(cls);
+      return () => document.body.classList.remove(cls);
+    }
+  }, [visualAmbience, isOn]);
+
   return (
     <div>
       <h2>
@@ -49,10 +94,24 @@ export default function Home() {
           reset={shouldReset}
         />
       </h2>
-      <div className="flex justify-center m-7">
-        <CategoryComponent />
+
+      <div className="relative m-7 h-16">
+        <TransitionGroup component={null}>
+          <CSSTransition
+            key={key}
+            timeout={2000}
+            classNames="fade"
+            mountOnEnter
+            unmountOnExit
+          >
+            <div className="absolute inset-0 flex justify-center items-center">
+              {content1}
+            </div>
+          </CSSTransition>
+        </TransitionGroup>
       </div>
-      <div className="flex space-x-4 justify-center items-center h-50">
+
+      {/* <div className="flex space-x-4 justify-center items-center h-50">
         {[0, 1, 2].map((id) => {
           return (
             <PresetButton
@@ -63,6 +122,20 @@ export default function Home() {
             />
           );
         })}
+      </div> */}
+      <div>
+        {" "}
+        <TransitionGroup component={null}>
+          <CSSTransition
+            key={key}
+            timeout={2000}
+            classNames="fade"
+            mountOnEnter
+            unmountOnExit
+          >
+            <div className="flex justify-center items-center">{content2}</div>
+          </CSSTransition>
+        </TransitionGroup>
       </div>
 
       <div className="flex space-x-4 justify-center items-center h-40">

@@ -14,6 +14,7 @@ export default {
           200: "#3d3d3d",
           300: "#5d5d5d",
           400: "#d8d8d8",
+          500: "#121212",
         },
       },
       keyframes: {

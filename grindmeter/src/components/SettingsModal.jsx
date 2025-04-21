@@ -7,12 +7,15 @@ import AddCategoryField from "./AddCategoryField";
 import { UserAuth } from "../context/AuthContext";
 import { ModifyCategoryField } from "./ModifyCategoryField";
 import DeleteCategoryField from "./DeleteCategoryField";
+import { useState } from "react";
+import { useAmbienceContext } from "../context/PresetContext";
 
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
-
+  const { visualAmbience, setVisualAmbience } = useAmbienceContext();
   const { googleSignIn, user, logOut } = UserAuth();
+  const [ambienceIsOn, setAmbienceIsOn] = useState(false);
 
   let lastUsedIndex = 0;
 
@@ -24,6 +27,22 @@ function SettingsModal({ open, onClose }) {
   const handleClose = () => {
     setCurrentPreset(presets[lastUsedIndex]);
     onClose();
+  };
+
+  const handleChange = (e) => {
+    switch (e.target.name) {
+      case "ambienceOn":
+        setAmbienceIsOn(e.target.checked);
+        if (!e.target.checked) {
+          setVisualAmbience(false);
+        }
+        break;
+      case "visualChange":
+        setVisualAmbience(e.target.checked);
+        break;
+      default:
+        console.log(e.target.name);
+    }
   };
 
   return (
@@ -80,8 +99,44 @@ function SettingsModal({ open, onClose }) {
               </h2>
               <VolumeSlider />
             </section>
-            <h2 className="text-customGreen-100 font-medium mb-2">Ambience</h2>
-            <section></section>
+            <section className="mb-5">
+              <div className="flex justify-between items-center w-full">
+                <h2 className="text-customGreen-100 font-medium">Ambience</h2>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    name="ambienceOn"
+                    onChange={handleChange}
+                  />
+                  <div
+                    className="
+        bg-customBlack-100 rounded-full w-8 h-4 ring-2 ring-customGreen-300 duration-300
+        after:bg-customGreen-300 after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:rounded-full after:duration-300
+        peer-checked:after:translate-x-4 peer-checked:after:bg-customGreen-100 peer-checked:ring-customGreen-100
+        hover:after:scale-95
+      "
+                  ></div>
+                </label>
+              </div>
+
+              {ambienceIsOn ? (
+                <div className="text-customGreen-200 text-sm">
+                  <h3>Visual Change</h3>
+                  <input
+                    name="visualChange"
+                    type="checkbox"
+                    onChange={handleChange}
+                  />
+                  <h3>Brown Noise</h3>
+                  <input type="checkbox" />
+                  <h3>Rain Noise</h3>
+                  <input type="checkbox" />
+                </div>
+              ) : (
+                <div></div>
+              )}
+            </section>
 
             <section>
               <h2 className="text-customGreen-100 font-medium mb-3">
