@@ -16,20 +16,23 @@ export default function Home() {
   const [displayedTime, setDisplayedTime] = useState(0);
   const [shouldReset, setShouldReset] = useState(0);
   const oldPresets = useRef(presets);
-  const { visualAmbience } = useAmbienceContext();
+  const { visualAmbience, setTimerRunning } = useAmbienceContext();
   const { currentCategory } = useCategoryContext();
+  // Stuff for CSS Transition
   const key = isOn && visualAmbience ? "AMB" : "CAT";
   const content1 =
     isOn && visualAmbience ? (
       <div className="text-white font-bold">{currentCategory}</div>
     ) : (
-      <div className="-z-10">
+      <div className="">
         <CategoryComponent />
       </div>
     );
   const content2 =
     isOn && visualAmbience ? (
-      <div></div>
+      <div>
+        <div className="flex space-x-4 justify-center items-center h-50"></div>
+      </div>
     ) : (
       <div className="flex space-x-4 justify-center items-center h-50">
         {[0, 1, 2].map((id) => {
@@ -74,6 +77,8 @@ export default function Home() {
 
   // Change background is visual ambience is turned on
   useEffect(() => {
+    // Update ambience context to see if timer is running
+    setTimerRunning(isOn);
     if (visualAmbience && isOn) {
       const cls = "bg-customBlack-500";
       document.body.classList.add(cls);
@@ -111,25 +116,12 @@ export default function Home() {
         </TransitionGroup>
       </div>
 
-      {/* <div className="flex space-x-4 justify-center items-center h-50">
-        {[0, 1, 2].map((id) => {
-          return (
-            <PresetButton
-              presets={presets}
-              key={id}
-              id={id}
-              onClick={() => handleTimerChange(id)}
-            />
-          );
-        })}
-      </div> */}
       <div>
-        {" "}
         <TransitionGroup component={null}>
           <CSSTransition
             key={key}
             timeout={2000}
-            classNames="fade"
+            classNames="preset-collapse"
             mountOnEnter
             unmountOnExit
           >
@@ -140,19 +132,23 @@ export default function Home() {
 
       <div className="flex space-x-4 justify-center items-center h-40">
         <button
-          className="cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
+          className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
     border-customGreen-200
     border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-    active:border-b-[2px] active:brightness-90 active:translate-y-[2px] text-3xl"
+    active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ${
+      isOn && visualAmbience ? "text-2xl" : "text-3xl"
+    }`}
           onClick={toggleTimer}
         >
           {isOn ? <BiPause /> : <BiPlay />}
         </button>
         <button
-          className="cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
+          className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
     border-customGreen-200
     border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-    active:border-b-[2px] active:brightness-90 active:translate-y-[2px] text-3xl"
+    active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  ${
+      isOn && visualAmbience ? "text-2xl" : "text-3xl"
+    }`}
           onClick={resetTimer}
         >
           <BiReset />

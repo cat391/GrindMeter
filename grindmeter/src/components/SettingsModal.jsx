@@ -13,7 +13,7 @@ import { useAmbienceContext } from "../context/PresetContext";
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
-  const { visualAmbience, setVisualAmbience } = useAmbienceContext();
+  const { setVisualAmbience, setBrownAmbience } = useAmbienceContext();
   const { googleSignIn, user, logOut } = UserAuth();
   const [ambienceIsOn, setAmbienceIsOn] = useState(false);
 
@@ -40,6 +40,9 @@ function SettingsModal({ open, onClose }) {
       case "visualChange":
         setVisualAmbience(e.target.checked);
         break;
+      case "brownChange":
+        setBrownAmbience(e.target.checked);
+        break;
       default:
         console.log(e.target.name);
     }
@@ -47,7 +50,7 @@ function SettingsModal({ open, onClose }) {
 
   return (
     <div
-      className={`fixed inset-0 flex justify-center items-center transition-colors ${
+      className={`fixed inset-0 z-50 flex justify-center items-center transition-colors ${
         open ? "visible bg-black/40" : "invisible"
       }`}
       onClick={onClose}
@@ -102,22 +105,25 @@ function SettingsModal({ open, onClose }) {
             <section className="mb-5">
               <div className="flex justify-between items-center w-full">
                 <h2 className="text-customGreen-100 font-medium">Ambience</h2>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    name="ambienceOn"
-                    onChange={handleChange}
-                  />
-                  <div
-                    className="
+                {open ? (
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      name="ambienceOn"
+                      onChange={handleChange}
+                      checked={ambienceIsOn}
+                    />
+                    <div
+                      className="
         bg-customBlack-100 rounded-full w-8 h-4 ring-2 ring-customGreen-300 duration-300
         after:bg-customGreen-300 after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:rounded-full after:duration-300
         peer-checked:after:translate-x-4 peer-checked:after:bg-customGreen-100 peer-checked:ring-customGreen-100
         hover:after:scale-95
       "
-                  ></div>
-                </label>
+                    ></div>
+                  </label>
+                ) : null}
               </div>
 
               {ambienceIsOn ? (
@@ -129,7 +135,7 @@ function SettingsModal({ open, onClose }) {
                     onChange={handleChange}
                   />
                   <h3>Brown Noise</h3>
-                  <input type="checkbox" />
+                  <input type="checkbox" name="brownChange" />
                   <h3>Rain Noise</h3>
                   <input type="checkbox" />
                 </div>
@@ -190,7 +196,6 @@ function SettingsModal({ open, onClose }) {
           </div>
         </div>
 
-        {/* Fixed Footer */}
         <div className="px-5 pb-5 pt-2 mt-auto">
           <hr className="border-customGreen-300/20 mb-4" />
           <button

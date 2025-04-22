@@ -17,11 +17,15 @@ export function useAmbienceContext() {
 }
 
 export function PresetProvider({ children }) {
+  // Preset Context
   const [presets, setPresets] = useState([60 * 10, 60 * 60, 60 * 90]);
   const [currentPreset, setCurrentPreset] = useState(presets[0]);
+  // Volume Context
   const [volume, setVolume] = useState(100);
+  // Ambience Context
   const [visualAmbience, setVisualAmbience] = useState(false);
-  // const [timerRunning, setTimerRunning] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [brownAmbience, setBrownAmbience] = useState(false);
 
   return (
     <PresetContext.Provider
@@ -37,6 +41,10 @@ export function PresetProvider({ children }) {
           value={{
             visualAmbience,
             setVisualAmbience,
+            timerRunning,
+            setTimerRunning,
+            brownAmbience,
+            setBrownAmbience,
           }}
         >
           {children}

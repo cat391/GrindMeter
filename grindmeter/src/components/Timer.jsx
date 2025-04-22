@@ -2,6 +2,7 @@ import useTimer from "./useTimer";
 import "../App.css";
 import { useVolumeContext } from "../context/PresetContext";
 import { useRef, useEffect } from "react";
+import { useAmbienceContext } from "../context/PresetContext";
 
 const convertToTimeStrV2 = (org) => {
   {
@@ -37,7 +38,7 @@ const convertToTimeStrV2 = (org) => {
 
 export default function Timer({ durationID, isRunning, reset }) {
   const { volume } = useVolumeContext();
-
+  const { visualAmbience, timerRunning, brownAmbience } = useAmbienceContext();
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
   const audioRef = useRef(null);
 
@@ -75,15 +76,27 @@ export default function Timer({ durationID, isRunning, reset }) {
   return (
     <div>
       <audio ref={audioRef} src="/sounds/betav2-ringtone.wav" loop />
-      <div
-        className={
-          state
-            ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700"
-            : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
-        }
-      >
-        {convertToTimeStrV2(totalSeconds)}
-      </div>
+      {timerRunning && visualAmbience ? (
+        <div
+          className={
+            state
+              ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700 [text-shadow:0_0_6px_rgba(255,0,0,0.5),0_0_12px_rgba(255,0,0,0.3)]"
+              : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400 [text-shadow:0_0_6px_rgba(255,255,255,0.5)]"
+          }
+        >
+          {convertToTimeStrV2(totalSeconds)}
+        </div>
+      ) : (
+        <div
+          className={
+            state
+              ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700"
+              : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
+          }
+        >
+          {convertToTimeStrV2(totalSeconds)}
+        </div>
+      )}
     </div>
   );
 }

@@ -14,3 +14,28 @@
 
   transition: opacity 300ms ease-in, transform 300ms ease-in;
 }
+
+/* transition.css */
+.preset-collapse {
+  overflow: hidden;
+}
+/* entering */
+.preset-collapse-enter {
+  max-height: 0;
+  opacity: 0;
+}
+.preset-collapse-enter-active {
+  max-height: 6rem; /* match your content’s height */
+  opacity: 1;
+  transition: max-height 300ms ease, opacity 300ms ease;
+}
+/* exiting */
+.preset-collapse-exit {
+  max-height: 6rem;
+  opacity: 1;
+}
+.preset-collapse-exit-active {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 300ms ease, opacity 300ms ease;
+}
