@@ -3,6 +3,7 @@ import "../App.css";
 import { useVolumeContext } from "../context/PresetContext";
 import { useRef, useEffect } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
+import YoutubeAudioPlayer from "./YoutubeAudioPlayer";
 
 const convertToTimeStrV2 = (org) => {
   {
@@ -38,7 +39,8 @@ const convertToTimeStrV2 = (org) => {
 
 export default function Timer({ durationID, isRunning, reset }) {
   const { volume } = useVolumeContext();
-  const { visualAmbience, timerRunning, brownAmbience } = useAmbienceContext();
+  const { visualAmbience, timerRunning, brownAmbience, rainAmbience } =
+    useAmbienceContext();
   const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
   const audioRef = useRef(null);
 
@@ -75,6 +77,14 @@ export default function Timer({ durationID, isRunning, reset }) {
 
   return (
     <div>
+      {timerRunning && brownAmbience ? (
+        <YoutubeAudioPlayer videoID="RqzGzwTY-6w" />
+      ) : null}
+
+      {timerRunning && rainAmbience ? (
+        <YoutubeAudioPlayer videoID="yIQd2Ya0Ziw" />
+      ) : null}
+
       <audio ref={audioRef} src="/sounds/betav2-ringtone.wav" loop />
       {timerRunning && visualAmbience ? (
         <div

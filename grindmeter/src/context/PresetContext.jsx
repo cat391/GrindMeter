@@ -26,6 +26,7 @@ export function PresetProvider({ children }) {
   const [visualAmbience, setVisualAmbience] = useState(false);
   const [timerRunning, setTimerRunning] = useState(false);
   const [brownAmbience, setBrownAmbience] = useState(false);
+  const [rainAmbience, setRainAmbience] = useState(false);
 
   return (
     <PresetContext.Provider
@@ -45,6 +46,8 @@ export function PresetProvider({ children }) {
             setTimerRunning,
             brownAmbience,
             setBrownAmbience,
+            rainAmbience,
+            setRainAmbience,
           }}
         >
           {children}

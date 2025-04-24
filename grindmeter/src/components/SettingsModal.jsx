@@ -1,3 +1,5 @@
+"use client";
+
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosLock } from "react-icons/io";
 import { usePresetContext } from "../context/PresetContext";
@@ -13,7 +15,8 @@ import { useAmbienceContext } from "../context/PresetContext";
 function SettingsModal({ open, onClose }) {
   const { presets, setPresets, currentPreset, setCurrentPreset } =
     usePresetContext();
-  const { setVisualAmbience, setBrownAmbience } = useAmbienceContext();
+  const { setVisualAmbience, setBrownAmbience, setRainAmbience } =
+    useAmbienceContext();
   const { googleSignIn, user, logOut } = UserAuth();
   const [ambienceIsOn, setAmbienceIsOn] = useState(false);
 
@@ -42,6 +45,10 @@ function SettingsModal({ open, onClose }) {
         break;
       case "brownChange":
         setBrownAmbience(e.target.checked);
+        break;
+      case "rainChange":
+        setRainAmbience(e.target.checked);
+        console.log("yeerr brown onoise");
         break;
       default:
         console.log(e.target.name);
@@ -127,17 +134,86 @@ function SettingsModal({ open, onClose }) {
               </div>
 
               {ambienceIsOn ? (
-                <div className="text-customGreen-200 text-sm">
-                  <h3>Visual Change</h3>
-                  <input
-                    name="visualChange"
-                    type="checkbox"
-                    onChange={handleChange}
-                  />
-                  <h3>Brown Noise</h3>
-                  <input type="checkbox" name="brownChange" />
-                  <h3>Rain Noise</h3>
-                  <input type="checkbox" />
+                <div className="text-customGreen-200 text-sm space-y-3 mt-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Visual Change</h3>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        name="visualChange"
+                        type="checkbox"
+                        className="sr-only peer"
+                        onChange={handleChange}
+                      />
+                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
+                        {/* Custom checkmark */}
+                        <svg
+                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </label>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Brown Noise</h3>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        name="brownChange"
+                        type="checkbox"
+                        className="sr-only peer"
+                        onChange={handleChange}
+                      />
+                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
+                        <svg
+                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </label>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Rain Noise</h3>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        name="rainChange"
+                        type="checkbox"
+                        className="sr-only peer"
+                        onChange={handleChange}
+                      />
+                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
+                        <svg
+                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               ) : (
                 <div></div>
