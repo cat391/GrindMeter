@@ -27,7 +27,12 @@ ChartJS.register(
   TimeScale
 );
 
-const LineGraph = ({ userEmail, timeLine }) => {
+const LineGraph = ({
+  userEmail,
+  timeLine,
+  startDate = null,
+  endDate = null,
+}) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
@@ -76,7 +81,15 @@ const LineGraph = ({ userEmail, timeLine }) => {
           where("date", "<=", endOfWeek.toISOString().split("T")[0])
         );
         break;
-
+      case "Custom":
+        // MAKE IT SO THAT IT CHANGES DATE OR WEEK DEPENDING ON HOW LARGE THE SCALE IS
+        // YOU CAN DO THIS BY CHANGING TIMELINE PROP TO WEEK/MONTH I THINK
+        q = query(
+          timerUseRef,
+          where("date", ">=", startDate),
+          where("date", "<=", endDate)
+        );
+        break;
       default:
         console.log(timeLine);
         q = query(timerUseRef);
@@ -149,20 +162,6 @@ const LineGraph = ({ userEmail, timeLine }) => {
 
     return () => unsubscribe();
   }, [userEmail, timeLine]);
-
-  function getStartOfWeek(date) {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Monday start
-    return new Date(d.setDate(diff));
-  }
-
-  function getEndOfWeek(date) {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() + (day === 0 ? 0 : 7 - day); // Adjust for Sunday end
-    return new Date(d.setDate(diff));
-  }
 
   // Chart options with a time scale for the x-axis
   const options = {

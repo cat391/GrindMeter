@@ -18,16 +18,19 @@ import LineGraph from "../components/LineGraph";
 import PieGraph from "../components/PieGraph";
 import DeleteData from "../components/DeleteData";
 import DownloadComponent from "../components/DownloadComponent";
+import CustomTimeRange from "../components/CustomTimeRange";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
   const [blurAnimationComplete, setBlurAnimationComplete] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const loginSpring = useSpring({
     opacity: blurAnimationComplete ? 1 : 0,
     transform: blurAnimationComplete ? "translateY(0)" : "translateY(10px)",
     config: { tension: 120, friction: 14 },
   });
+  // Stuff for custom time range
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const handleGoogleSignIn = async () => {
     try {
@@ -123,7 +126,18 @@ export default function Login() {
   const [selectedValue, setSelectedValue] = useState("Month");
 
   const handleDropdownChange = (e) => {
+    console.log(e.target.value === "Custom");
+    console.log(!startDate || !endDate);
+    console.log(startDate);
+    console.log(endDate);
+    if (e.target.value === "Custom" && (!startDate || !endDate)) return; // Validation if set to custom range
     setSelectedValue(e.target.value);
+  };
+
+  const handleDateChange = (e) => {
+    e.target.name === "startDate"
+      ? setStartDate(e.target.value)
+      : setEndDate(e.target.value);
   };
 
   return (
@@ -137,7 +151,11 @@ export default function Login() {
           hoverFillColor="#222"
         />
       </div>
-      <div className="relative z-10 w-full max-w-[1200px] h-auto bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center">
+      <div
+        className={`relative z-10 ${
+          user ? "w-full max-w-[1200px] h-auto" : "w-[1200px] h-[550px]"
+        } bg-customBlack-100 text-white rounded-2xl p-8 shadow-xl flex flex-col items-center`}
+      >
         <div className="mt-24 flex flex-col items-center">
           {user && (
             <>
@@ -159,6 +177,20 @@ export default function Login() {
                 <div>
                   <DownloadComponent />
                 </div>
+                <div>
+                  <div className="bg-customBlack-200 text-black">
+                    <input
+                      name="startDate"
+                      type="date"
+                      onChange={handleDateChange}
+                    />
+                    <input
+                      name="endDate"
+                      type="date"
+                      onChange={handleDateChange}
+                    />
+                  </div>
+                </div>
               </div>
               <div className="absolute top-8 right-8 text-black">
                 <select
@@ -169,6 +201,7 @@ export default function Login() {
                   <option>Week</option>
                   <option>Month</option>
                   <option>Year</option>
+                  <option>Custom</option>
                 </select>
               </div>
             </>
@@ -177,13 +210,13 @@ export default function Login() {
           <div className="py-8 text-lg">
             {user?.displayName ? (
               <div className="relative z-10 w-full max-w-[1200px] h-auto bg-customBlack-100 text-white rounded-2xl p-8 grid grid-rows-[auto_1fr]">
-                {/* Header content here */}
-
                 <div className="grid grid-cols-2 gap-4 h-full">
                   <div className="relative">
                     <LineGraph
                       userEmail={user.email}
                       timeLine={selectedValue}
+                      startDate={startDate}
+                      endDate={endDate}
                     />
                   </div>
                   <div className="relative">
@@ -218,7 +251,7 @@ export default function Login() {
                         text="Login with Google"
                         disabled={false}
                         speed={3}
-                        className="custom-class group-hover:text-customGreen-300"
+                        className="custom-class group-hover:text-customGreen-300 m-11"
                       />
                     </button>
                   </animated.div>
