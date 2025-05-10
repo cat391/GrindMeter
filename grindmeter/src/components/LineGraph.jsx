@@ -82,13 +82,24 @@ const LineGraph = ({
         );
         break;
       case "Custom":
-        // MAKE IT SO THAT IT CHANGES DATE OR WEEK DEPENDING ON HOW LARGE THE SCALE IS
-        // YOU CAN DO THIS BY CHANGING TIMELINE PROP TO WEEK/MONTH I THINK
         q = query(
           timerUseRef,
           where("date", ">=", startDate),
           where("date", "<=", endDate)
         );
+
+        // Change the time axis - days or weeks
+        const diffInDays = Math.floor(
+          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+
+        if (diffInDays > 31) {
+          timeLine = "Year"; // Sets x-axis to display in weeks
+        } else {
+          timeLine = "Month"; // Sets x-axis to display in days
+        }
+
         break;
       default:
         console.log(timeLine);
@@ -101,7 +112,7 @@ const LineGraph = ({
 
       const parseDateString = (dateStr) => {
         const [year, month, day] = dateStr.split("-").map(Number);
-        return new Date(Date.UTC(year, month - 1, day, 12, 0, 0)); // Noon UTC
+        return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
       };
 
       snapshot.forEach((doc) => {
@@ -161,7 +172,7 @@ const LineGraph = ({
     });
 
     return () => unsubscribe();
-  }, [userEmail, timeLine]);
+  }, [userEmail, timeLine, startDate, endDate]);
 
   // Chart options with a time scale for the x-axis
   const options = {

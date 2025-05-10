@@ -178,17 +178,25 @@ export default function Login() {
                   <DownloadComponent />
                 </div>
                 <div>
-                  <div className="bg-customBlack-200 text-black">
-                    <input
-                      name="startDate"
-                      type="date"
-                      onChange={handleDateChange}
-                    />
-                    <input
-                      name="endDate"
-                      type="date"
-                      onChange={handleDateChange}
-                    />
+                  <div className="bg-customBlack-200 p-6 rounded-lg text-black flex flex-col justify-between h-auto space-y-4">
+                    <label className="text-white font-medium">
+                      Custom Time Range
+                    </label>
+                    <div className="flex items-center justify-center space-x-2">
+                      <input
+                        name="startDate"
+                        type="date"
+                        onChange={handleDateChange}
+                        className="text-sm p-1"
+                      />
+
+                      <input
+                        name="endDate"
+                        type="date"
+                        onChange={handleDateChange}
+                        className="text-sm p-1"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -196,7 +204,7 @@ export default function Login() {
                 <select
                   value={selectedValue}
                   onChange={handleDropdownChange}
-                  className="bg-customBlack-300 px-3 py-1 outline-none w-28 text-md text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#7d808a] border-[#717171] pr-10 appearance-none"
+                  className="bg-customBlack-300 px-3 py-1 outline-none w-24 text-xs text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#7d808a] border-[#717171] pr-10 appearance-none"
                 >
                   <option>Week</option>
                   <option>Month</option>
@@ -220,7 +228,12 @@ export default function Login() {
                     />
                   </div>
                   <div className="relative">
-                    <PieGraph userEmail={user.email} timeLine={selectedValue} />
+                    <PieGraph
+                      userEmail={user.email}
+                      timeLine={selectedValue}
+                      startDate={startDate}
+                      endDate={endDate}
+                    />
                   </div>
                 </div>
               </div>

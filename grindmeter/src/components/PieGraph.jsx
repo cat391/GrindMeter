@@ -7,7 +7,12 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 // Register Chart.js components needed for pie chart
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieGraph = ({ userEmail, timeLine }) => {
+const PieGraph = ({
+  userEmail,
+  timeLine,
+  startDate = null,
+  endDate = null,
+}) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
@@ -51,6 +56,26 @@ const PieGraph = ({ userEmail, timeLine }) => {
           where("date", ">=", startOfWeek.toISOString().split("T")[0]),
           where("date", "<=", endOfWeek.toISOString().split("T")[0])
         );
+        break;
+      case "Custom":
+        q = query(
+          timerUseRef,
+          where("date", ">=", startDate),
+          where("date", "<=", endDate)
+        );
+
+        // Change the time axis - days or weeks
+        const diffInDays = Math.floor(
+          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+
+        if (diffInDays > 31) {
+          timeLine = "Year"; // Sets x-axis to display in weeks
+        } else {
+          timeLine = "Month"; // Sets x-axis to display in days
+        }
+
         break;
       default:
         q = query(timerUseRef);
@@ -113,7 +138,7 @@ const PieGraph = ({ userEmail, timeLine }) => {
     });
 
     return () => unsubscribe();
-  }, [userEmail, timeLine]);
+  }, [userEmail, timeLine, startDate, endDate]);
 
   const options = {
     responsive: true,
