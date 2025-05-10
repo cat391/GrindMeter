@@ -7,7 +7,7 @@ export default function CategoryComponent() {
     useCategoryContext();
   const { user } = UserAuth();
 
-  const [selectedValue, setSelectedValue] = useState("--");
+  const [selectedValue, setSelectedValue] = useState(currentCategory);
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
