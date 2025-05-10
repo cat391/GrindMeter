@@ -65,6 +65,10 @@ export default function useTimer(duration, isRunning, reset) {
   const presetChanged = useRef(false);
   const finishedRef = useRef(false);
 
+  // TEst
+  const heartbeatRef = useRef(null);
+  const lastHeartbeatRef = useRef(null);
+
   // Track timer session data
   const startTimeRef = useRef(null);
 
@@ -109,8 +113,9 @@ export default function useTimer(duration, isRunning, reset) {
   useEffect(() => {
     if (running) {
       finishedRef.current = false;
-      startTimeRef.current = Date.now();
       const startingTime = Date.now();
+      startTimeRef.current = startingTime;
+      lastHeartbeatRef.current = startingTime;
 
       intervalRef.current = setInterval(() => {
         const passedTime = Math.floor((Date.now() - startingTime) / 1000);
@@ -124,28 +129,37 @@ export default function useTimer(duration, isRunning, reset) {
         if (remainingTime <= 0) {
           clearInterval(intervalRef.current);
           const endTime = Date.now();
-          const duration = (endTime - startTimeRef.current) / 1000;
+          const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
           finishedRef.current = false;
 
-          addTimerData(duration, currentCategory, user);
-          console.log("add timer 1 ran");
+          addTimerData(leftOverDuration, currentCategory, user);
         }
       }, 100);
+
+      heartbeatRef.current = setInterval(() => {
+        const now = Date.now();
+        const sinceLast = Math.floor((now - lastHeartbeatRef.current) / 1000);
+        if (sinceLast >= 60) {
+          addTimerData(sinceLast, currentCategory, user);
+          lastHeartbeatRef.current = now;
+        }
+      }, 1000);
     } else {
       if (
         startTimeRef.current &&
         time > 0 &&
-        !presetChanged.curren &&
+        !presetChanged.current &&
         !finishedRef.current
       ) {
         const endTime = Date.now();
-        const duration = (endTime - startTimeRef.current) / 1000;
+        const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
         finishedRef.current = true;
 
-        addTimerData(duration, currentCategory, user);
+        addTimerData(leftOverDuration, currentCategory, user);
       }
 
       clearInterval(intervalRef.current);
+      clearInterval(heartbeatRef.current);
       remainingTimeRef.current = time;
       presetChanged.current = false;
     }
