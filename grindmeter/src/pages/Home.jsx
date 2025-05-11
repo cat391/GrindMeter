@@ -9,6 +9,7 @@ import { useAmbienceContext } from "../context/PresetContext";
 import { useCategoryContext } from "../context/CategoryContext";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "../transition.css";
+import { UserAuth } from "../context/AuthContext";
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
@@ -18,10 +19,11 @@ export default function Home() {
   const oldPresets = useRef(presets);
   const { visualAmbience, setTimerRunning } = useAmbienceContext();
   const { currentCategory } = useCategoryContext();
+  const { user } = UserAuth();
   // Stuff for CSS Transition
   const key = isOn && visualAmbience ? "AMB" : "CAT";
   const content1 =
-    isOn && visualAmbience ? (
+    isOn && visualAmbience && user ? (
       <div className="text-white font-bold">{currentCategory}</div>
     ) : (
       <div className="">

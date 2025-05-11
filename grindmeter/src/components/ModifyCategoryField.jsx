@@ -112,7 +112,7 @@ export function ModifyCategoryField() {
           type="submit"
           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#b7b7b7]"
         >
-          <MdOutlineChangeCircle size={25} />
+          <MdOutlineChangeCircle size={25} className="hover:text-white" />
         </button>
       </form>
     </div>

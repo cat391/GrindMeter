@@ -74,7 +74,7 @@ export default function AddCategoryField() {
           type="submit"
           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[#b7b7b7]"
         >
-          <IoIosAddCircleOutline size={25} />
+          <IoIosAddCircleOutline size={25} className="hover:text-white" />
         </button>
       </div>
     </form>

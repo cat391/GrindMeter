@@ -18,7 +18,6 @@ import LineGraph from "../components/LineGraph";
 import PieGraph from "../components/PieGraph";
 import DeleteData from "../components/DeleteData";
 import DownloadComponent from "../components/DownloadComponent";
-import CustomTimeRange from "../components/CustomTimeRange";
 
 export default function Login() {
   const { googleSignIn, user, logOut } = UserAuth();
@@ -166,7 +165,7 @@ export default function Login() {
                   </h1>
                   <button
                     onClick={handleSignOut}
-                    className="px-6 py-2 border border-white rounded-lg hover:bg-gray-800 transition-colors text-customGreen-100"
+                    className="px-6 py-2 border rounded-lg border-customGreen-300 text-customGreen-200 transition duration-300 ease-in-out transform hover:text-customGreen-100 hover:bg-customGreen-300/10"
                   >
                     Log out
                   </button>
@@ -187,14 +186,14 @@ export default function Login() {
                         name="startDate"
                         type="date"
                         onChange={handleDateChange}
-                        className="text-sm p-1"
+                        className="text-sm p-1 hover:cursor-pointer"
                       />
 
                       <input
                         name="endDate"
                         type="date"
                         onChange={handleDateChange}
-                        className="text-sm p-1"
+                        className="text-sm p-1 hover:cursor-pointer"
                       />
                     </div>
                   </div>

@@ -55,7 +55,7 @@ async function deleteCategoryData(userEmail, categoryToDelete) {
 }
 
 export default function DeleteData() {
-  const [selectedValue, setSelectedValue] = useState("Fake category");
+  const [selectedValue, setSelectedValue] = useState("");
   const { categories, setCategories } = useCategoryContext();
   const [open, setOpen] = useState(false);
   const { user } = UserAuth();
