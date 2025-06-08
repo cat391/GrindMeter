@@ -128,9 +128,12 @@ export default function useTimer(duration, isRunning, reset) {
 
         if (remainingTime <= 0) {
           clearInterval(intervalRef.current);
+          clearInterval(heartbeatRef.current);
+
           const endTime = Date.now();
           const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
-          finishedRef.current = false;
+
+          finishedRef.current = true;
 
           addTimerData(leftOverDuration, currentCategory, user);
         }
@@ -139,33 +142,41 @@ export default function useTimer(duration, isRunning, reset) {
       heartbeatRef.current = setInterval(() => {
         const now = Date.now();
         const sinceLast = Math.floor((now - lastHeartbeatRef.current) / 1000);
-        if (sinceLast >= 60) {
+        if (sinceLast >= 30) {
           addTimerData(sinceLast, currentCategory, user);
           lastHeartbeatRef.current = now;
         }
       }, 1000);
     } else {
+      clearInterval(intervalRef.current);
+      clearInterval(heartbeatRef.current);
+
       if (
         startTimeRef.current &&
         time > 0 &&
         !presetChanged.current &&
-        !finishedRef.current
+        !finishedRef.current // Only record if timer wasn't finished naturally
       ) {
         const endTime = Date.now();
         const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
-        finishedRef.current = true;
 
-        addTimerData(leftOverDuration, currentCategory, user);
+        // Only record if there's meaningful duration (>1 second)
+        if (leftOverDuration > 1) {
+          addTimerData(leftOverDuration, currentCategory, user);
+        }
       }
 
-      clearInterval(intervalRef.current);
-      clearInterval(heartbeatRef.current);
       remainingTimeRef.current = time;
       presetChanged.current = false;
+
+      if (time > 0) {
+        finishedRef.current = false;
+      }
     }
 
     return () => {
       clearInterval(intervalRef.current);
+      clearInterval(heartbeatRef.current);
     };
   }, [running, presets]);
 
