@@ -1,6 +1,8 @@
 # Grindmeter
 
-A React app for deep study sessions that lets you set timers and track your habits over time.
+##  ℹ️ Overview
+
+GrindMeter is a highly customizable focus timer and session tracker that helps you enter—and stay in—flow, then turns your work into motivating stats by subject and time.
 
 ## Features
 
