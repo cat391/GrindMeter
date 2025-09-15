@@ -10,7 +10,7 @@ GrindMeter is a highly customizable focus timer and session tracker that helps y
 
 ## Problem Solved 🚀
  
-Staying focused is hard - especially in college. I built Grindmeter to cut the noise and keep you in flow. Grindmeter allows you to work in focused blocks, and turns each session into simple statistics. By making session data easily accessible, you can be motivated to work harder and improve your numbers or learn to optimize your work habits. 
+Staying focused is hard, especially in college. I built Grindmeter to cut the noise and keep you in flow. Grindmeter allows you to work in focused blocks, and turns each session into simple statistics. By making session data easily accessible, you can be motivated to work harder and improve your numbers or learn to optimize your work habits. 
 
 
 ## Tech Stack
