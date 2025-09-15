@@ -1,21 +1,26 @@
 # Grindmeter
 
-##  ℹ️ Overview
+## Highlights 
 
-GrindMeter is a highly customizable focus timer and session tracker that helps you enter—and stay in—flow, then turns your work into motivating stats by subject and time.
+- Track time and log study session with a category
+- View your study history as interactable lines charts or pie charts
+- Custom focus options (sound ambience and "focus" mode)
 
-## Features
+##  ℹ️ Overview / Problem Solved 🚀
 
-- ⏱️ **Study Timer**: Start, pause, and stop timed study sessions
-- 📊 **Data Tracking**: Log each session with a category (e.g., “Math,” “Reading,” “Coding”)
-- 📈 **Visualizations**: View your study history as line charts or pie charts
-- 💾 **Export**: Download your session data as a JSON file for further analysis
+GrindMeter is a highly customizable focus timer and session tracker that helps you enter—and stay in—flow, then turns your work into statistics by subject and time. 
+ 
+Staying focused is hard - especially in college. I built Grindmeter to cut the noise and keep you in flow. Grindmeter allows you to work in focused blocks, and turns each session into simple statistics. By making session data easily accessible, you can be motivated to work harder and improve your numbers or learn to optimize your work habits. 
 
-## Problem Solved
-
-Grindmeter helps you understand and optimize your study habits by making session data easily accessible and visual—no more guessing how much time you spent on each subject.
 
 ## Tech Stack
 
 - **React.js**
+- **JavaScript**
 - **Tailwind CSS**
+
+## 🔗 Website Link 
+
+https://studytimer-9a3ac.web.app/ 
+
+
