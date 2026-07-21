@@ -8,15 +8,17 @@ import {
   where,
   query,
   getDocs,
+  increment,
 } from "firebase/firestore";
 import { useCategoryContext } from "../context/CategoryContext";
 import { UserAuth } from "../context/AuthContext";
+import { formatLocalDate } from "../utils/date";
 
 async function addTimerData(duration, currentCategory, user) {
   if (!user || !user.email) return; // Add additional check for email
 
   try {
-    const currentDate = new Date().toISOString().split("T")[0];
+    const currentDate = formatLocalDate();
     const timerUseRef = collection(db, `timerData/${user.email}/timerUse`);
 
     // Query for existing document with same category and date
@@ -29,11 +31,10 @@ async function addTimerData(duration, currentCategory, user) {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      // Document exists - update duration
+      // Document exists - atomically add to duration so concurrent writes don't clobber each other
       const docRef = querySnapshot.docs[0].ref;
-      const currentDuration = querySnapshot.docs[0].data().duration || 0;
       await updateDoc(docRef, {
-        duration: currentDuration + Math.round(duration),
+        duration: increment(Math.round(duration)),
       });
       console.log("Document updated with ID: ", docRef.id);
     } else {
@@ -58,71 +59,77 @@ export default function useTimer(duration, isRunning, reset) {
   const { user } = UserAuth();
   const remainingTimeRef = useRef(presets[duration]);
   const intervalRef = useRef(null);
-  const oldPresets = useRef(presets);
-  const shouldReset = useRef(true);
   const prevResetVal = useRef(reset);
   const prevDurationVal = useRef(duration);
-  const presetChanged = useRef(false);
+  const skipPauseRecordRef = useRef(false);
   const finishedRef = useRef(false);
 
-  // TEst
   const heartbeatRef = useRef(null);
   const lastHeartbeatRef = useRef(null);
+  // Timer time (seconds) still available to be recorded this run; every write
+  // is capped by this so the session total never exceeds its duration.
+  const remainingBudgetRef = useRef(presets[duration]);
 
   // Track timer session data
   const startTimeRef = useRef(null);
 
-  // Changes running state if prop changes (unpaused or paused)
+  // Keep category/user in refs so interval callbacks read the latest values
+  // instead of the ones captured when the running effect last ran.
+  const categoryRef = useRef(currentCategory);
+  const userRef = useRef(user);
 
+  useEffect(() => {
+    categoryRef.current = currentCategory;
+  }, [currentCategory]);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
+  // Changes running state if prop changes (unpaused or paused)
   useEffect(() => {
     setRunning(isRunning);
   }, [isRunning]);
 
-  useEffect(() => {
-    const didPresetChange = presets.some(
-      (element, index) =>
-        element !== oldPresets.current[index] && index !== duration
-    );
-
-    if (didPresetChange) {
-      shouldReset.current = false;
-    }
-
-    presetChanged.current = true;
-
-    oldPresets.current = presets;
-  }, [presets]);
-
   // Resets time if startingSeconds is reset or changed
   useEffect(() => {
-    if (
-      shouldReset.current ||
-      reset > prevResetVal.current ||
-      prevDurationVal.current !== duration
-    ) {
+    if (reset > prevResetVal.current || prevDurationVal.current !== duration) {
+      // This runs before the paired pause, whose recording is skipped below —
+      // so the active run's un-heartbeated tail must be recorded here.
+      if (running && startTimeRef.current && !finishedRef.current) {
+        const now = Date.now();
+        const sinceLast = (now - lastHeartbeatRef.current) / 1000;
+        const capped = Math.min(sinceLast, remainingBudgetRef.current);
+        lastHeartbeatRef.current = now;
+        remainingBudgetRef.current -= capped;
+        if (capped > 1) {
+          addTimerData(capped, categoryRef.current, userRef.current);
+        }
+      }
       setTime(presets[duration]);
       remainingTimeRef.current = presets[duration];
-    } else {
-      shouldReset.current = true;
+      // A reset/duration-switch also flips the timer off; tell the running
+      // effect not to record the resulting pause as session time.
+      skipPauseRecordRef.current = true;
     }
 
     prevResetVal.current = reset;
     prevDurationVal.current = duration;
-  }, [duration, reset]);
+  }, [duration, reset, presets, running]);
 
   useEffect(() => {
     if (running) {
+      skipPauseRecordRef.current = false;
       finishedRef.current = false;
       const startingTime = Date.now();
       startTimeRef.current = startingTime;
       lastHeartbeatRef.current = startingTime;
+      const startingRemaining = remainingTimeRef.current;
+      remainingBudgetRef.current = startingRemaining;
 
       intervalRef.current = setInterval(() => {
         const passedTime = Math.floor((Date.now() - startingTime) / 1000);
-        const remainingTime = Math.max(
-          remainingTimeRef.current - passedTime,
-          0
-        );
+        const remainingTime = Math.max(startingRemaining - passedTime, 0);
 
         setTime(remainingTime);
 
@@ -130,47 +137,55 @@ export default function useTimer(duration, isRunning, reset) {
           clearInterval(intervalRef.current);
           clearInterval(heartbeatRef.current);
 
-          const endTime = Date.now();
-          const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
+          const now = Date.now();
+          const sinceLast = (now - lastHeartbeatRef.current) / 1000;
+          const capped = Math.min(sinceLast, remainingBudgetRef.current);
+          lastHeartbeatRef.current = now;
+          remainingBudgetRef.current = 0;
 
           finishedRef.current = true;
 
-          addTimerData(leftOverDuration, currentCategory, user);
+          if (capped > 0) {
+            addTimerData(capped, categoryRef.current, userRef.current);
+          }
         }
       }, 100);
 
       heartbeatRef.current = setInterval(() => {
         const now = Date.now();
-        const sinceLast = Math.floor((now - lastHeartbeatRef.current) / 1000);
+        const sinceLast = (now - lastHeartbeatRef.current) / 1000;
         if (sinceLast >= 30) {
-          addTimerData(sinceLast, currentCategory, user);
+          const capped = Math.min(sinceLast, remainingBudgetRef.current);
           lastHeartbeatRef.current = now;
+          remainingBudgetRef.current -= capped;
+          if (capped > 0) {
+            addTimerData(capped, categoryRef.current, userRef.current);
+          }
         }
       }, 1000);
     } else {
       clearInterval(intervalRef.current);
       clearInterval(heartbeatRef.current);
 
-      if (
-        startTimeRef.current &&
-        time > 0 &&
-        !presetChanged.current &&
-        !finishedRef.current // Only record if timer wasn't finished naturally
-      ) {
-        const endTime = Date.now();
-        const leftOverDuration = (endTime - lastHeartbeatRef.current) / 1000;
+      if (skipPauseRecordRef.current) {
+        skipPauseRecordRef.current = false;
+      } else {
+        if (startTimeRef.current && time > 0 && !finishedRef.current) {
+          const now = Date.now();
+          const sinceLast = (now - lastHeartbeatRef.current) / 1000;
+          const capped = Math.min(sinceLast, remainingBudgetRef.current);
 
-        // Only record if there's meaningful duration (>1 second)
-        if (leftOverDuration > 1) {
-          addTimerData(leftOverDuration, currentCategory, user);
+          // Only record if there's meaningful duration (>1 second)
+          if (capped > 1) {
+            addTimerData(capped, categoryRef.current, userRef.current);
+          }
         }
-      }
 
-      remainingTimeRef.current = time;
-      presetChanged.current = false;
+        remainingTimeRef.current = time;
 
-      if (time > 0) {
-        finishedRef.current = false;
+        if (time > 0) {
+          finishedRef.current = false;
+        }
       }
     }
 
@@ -178,7 +193,7 @@ export default function useTimer(duration, isRunning, reset) {
       clearInterval(intervalRef.current);
       clearInterval(heartbeatRef.current);
     };
-  }, [running, presets]);
+  }, [running]);
 
   const finished = time === 0;
 
