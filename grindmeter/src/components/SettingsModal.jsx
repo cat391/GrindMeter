@@ -13,22 +13,23 @@ import { useState } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
 
 function SettingsModal({ open, onClose }) {
-  const { presets, setPresets, currentPreset, setCurrentPreset } =
-    usePresetContext();
-  const { setVisualAmbience, setBrownAmbience, setRainAmbience } =
-    useAmbienceContext();
+  const { currentPresetIndex, setCurrentPresetIndex } = usePresetContext();
+  const {
+    visualAmbience,
+    setVisualAmbience,
+    brownAmbience,
+    setBrownAmbience,
+    rainAmbience,
+    setRainAmbience,
+  } = useAmbienceContext();
   const { googleSignIn, user, logOut } = UserAuth();
   const [ambienceIsOn, setAmbienceIsOn] = useState(false);
 
-  let lastUsedIndex = 0;
-
   const handleClick = (e) => {
-    setCurrentPreset(presets[e.target.id]);
-    lastUsedIndex = e.target.id;
+    setCurrentPresetIndex(Number(e.target.id));
   };
 
   const handleClose = () => {
-    setCurrentPreset(presets[lastUsedIndex]);
     onClose();
   };
 
@@ -38,6 +39,8 @@ function SettingsModal({ open, onClose }) {
         setAmbienceIsOn(e.target.checked);
         if (!e.target.checked) {
           setVisualAmbience(false);
+          setBrownAmbience(false);
+          setRainAmbience(false);
         }
         break;
       case "visualChange":
@@ -48,10 +51,9 @@ function SettingsModal({ open, onClose }) {
         break;
       case "rainChange":
         setRainAmbience(e.target.checked);
-        console.log("yeerr brown onoise");
         break;
       default:
-        console.log(e.target.name);
+        break;
     }
   };
 
@@ -90,7 +92,7 @@ function SettingsModal({ open, onClose }) {
                       border-2 border-customGreen-300 text-customGreen-100 text-sm py-1 px-3 rounded-md
                       transition duration-100 ease-in-out transform
                       ${
-                        presets.indexOf(currentPreset) !== index
+                        currentPresetIndex !== index
                           ? "opacity-45 hover:opacity-75"
                           : "opacity-100"
                       }
@@ -143,6 +145,7 @@ function SettingsModal({ open, onClose }) {
                         type="checkbox"
                         className="sr-only peer"
                         onChange={handleChange}
+                        checked={visualAmbience}
                       />
                       <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
                         {/* Custom checkmark */}
@@ -170,6 +173,7 @@ function SettingsModal({ open, onClose }) {
                         type="checkbox"
                         className="sr-only peer"
                         onChange={handleChange}
+                        checked={brownAmbience}
                       />
                       <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
                         <svg
@@ -196,6 +200,7 @@ function SettingsModal({ open, onClose }) {
                         type="checkbox"
                         className="sr-only peer"
                         onChange={handleChange}
+                        checked={rainAmbience}
                       />
                       <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
                         <svg

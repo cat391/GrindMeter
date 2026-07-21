@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { usePresetContext } from "../context/PresetContext";
 
 export default function TimerInput() {
-  const { presets, setPresets, currentPreset, setCurrentPreset } =
+  const { setPresets, currentPreset, currentPresetIndex } =
     usePresetContext();
 
   const [hour, setHour] = useState(
@@ -22,24 +22,17 @@ export default function TimerInput() {
       setHour(Number(input));
     } else if (id === "minute" && Number(input) < 60) {
       setMinute(Number(input));
-    } else if (Number(input) < 60) {
+    } else if (id === "second" && Number(input) < 60) {
       setSecond(Number(input));
-    }
-
-    if (input === 0) {
-      setErrorSave(true);
-      setTimeout(() => setErrorSave(false), 1000);
     }
   };
 
   const handleSave = () => {
-    const currentPresetIndex = presets.indexOf(currentPreset);
     const updatedPreset = hour * 3600 + minute * 60 + second;
 
     setPresets((prevPresets) => {
       if (updatedPreset === 0) {
         setErrorSave(true);
-        console.log("asdf");
         setTimeout(() => setErrorSave(false), 500);
         return prevPresets; // Do not change presets if updated preset has no time
       }
@@ -47,8 +40,6 @@ export default function TimerInput() {
       const newPresets = prevPresets.map((preset, index) =>
         index === currentPresetIndex ? updatedPreset : preset
       );
-
-      setCurrentPreset(updatedPreset);
 
       return newPresets;
     });

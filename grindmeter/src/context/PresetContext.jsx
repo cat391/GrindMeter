@@ -19,7 +19,8 @@ export function useAmbienceContext() {
 export function PresetProvider({ children }) {
   // Preset Context
   const [presets, setPresets] = useState([60 * 10, 60 * 60, 60 * 90]);
-  const [currentPreset, setCurrentPreset] = useState(presets[0]);
+  const [currentPresetIndex, setCurrentPresetIndex] = useState(0);
+  const currentPreset = presets[currentPresetIndex];
   // Volume Context
   const [volume, setVolume] = useState(100);
   // Ambience Context
@@ -34,7 +35,8 @@ export function PresetProvider({ children }) {
         presets,
         setPresets,
         currentPreset,
-        setCurrentPreset,
+        currentPresetIndex,
+        setCurrentPresetIndex,
       }}
     >
       <VolumeContext.Provider value={{ volume, setVolume }}>

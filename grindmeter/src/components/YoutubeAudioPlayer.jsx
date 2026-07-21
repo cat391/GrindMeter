@@ -1,13 +1,23 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import YouTube from "react-youtube";
+import { useVolumeContext } from "../context/PresetContext";
 
 export default function YoutubeAudioPlayer({ videoID }) {
   const playerRef = useRef(null);
+  const { volume } = useVolumeContext();
 
   const onPlayerReady = (e) => {
+    playerRef.current = e.target;
     e.target.playVideo();
     e.target.unMute();
+    e.target.setVolume(volume);
   };
+
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.setVolume(volume);
+    }
+  }, [volume]);
 
   const opts = {
     height: "0", // no visible video
@@ -25,12 +35,7 @@ export default function YoutubeAudioPlayer({ videoID }) {
 
   return (
     <div style={{ overflow: "hidden", width: 0, height: 0 }}>
-      <YouTube
-        ref={playerRef}
-        videoId={videoID}
-        opts={opts}
-        onReady={onPlayerReady}
-      />
+      <YouTube videoId={videoID} opts={opts} onReady={onPlayerReady} />
     </div>
   );
 }
