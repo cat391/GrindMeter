@@ -30,6 +30,8 @@ async function deleteCategoryData(userEmail, categoryToDelete) {
 
       await batch.commit();
       console.log(`Deleted all ${querySnapshot.size} timer records`);
+
+      return querySnapshot.size;
     } else {
       // Query all documents with the specified category
       const q = query(timerUseRef, where("category", "==", categoryToDelete));
@@ -45,9 +47,9 @@ async function deleteCategoryData(userEmail, categoryToDelete) {
       console.log(
         `Deleted ${deletePromises.length} documents for category: ${categoryToDelete}`
       );
-    }
 
-    return deletePromises.length; // Return count of deleted documents
+      return deletePromises.length;
+    }
   } catch (error) {
     console.error("Error deleting category data: ", error);
     throw error;
@@ -58,15 +60,27 @@ export default function DeleteData() {
   const [selectedValue, setSelectedValue] = useState("");
   const { categories, setCategories } = useCategoryContext();
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
   const { user } = UserAuth();
 
   const handleDropdownChange = (e) => {
     setSelectedValue(e.target.value);
   };
 
-  const handleFinalRemoveDataClick = async () => {
-    deleteCategoryData(user.email, selectedValue);
+  const closeModal = () => {
+    setError("");
     setOpen(false);
+  };
+
+  const handleFinalRemoveDataClick = async () => {
+    setError("");
+    try {
+      await deleteCategoryData(user.email, selectedValue);
+      closeModal();
+    } catch (err) {
+      console.error("Error deleting data: ", err);
+      setError("Failed to delete data. Please try again.");
+    }
   };
 
   return (
@@ -75,7 +89,7 @@ export default function DeleteData() {
         className={`fixed z-50 inset-0 flex justify-center items-center transition-colors ${
           open ? "visible bg-black/40" : "invisible"
         }`}
-        onClick={() => setOpen(false)}
+        onClick={closeModal}
       >
         <div
           className="bg-customBlack-200 p-6 rounded-lg relative w-[300px]"
@@ -85,7 +99,7 @@ export default function DeleteData() {
             <h1 className="text-lg font-bold">Delete Data?</h1>
             <button
               className="hover:bg-customBlack-300 rounded-full p-1 -mt-2 -mr-2"
-              onClick={() => setOpen(false)}
+              onClick={closeModal}
             >
               <IoIosClose size={24} />
             </button>
@@ -98,10 +112,12 @@ export default function DeleteData() {
               : ` your ${selectedValue} data?`}
           </label>
 
+          {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
+
           <div className="flex justify-end space-x-3">
             <button
               className="border-2 border-customBlack-400 bg-customBlack-300 text-sm py-1 px-3 rounded-md border-opacity-20 "
-              onClick={() => setOpen(false)}
+              onClick={closeModal}
             >
               Cancel
             </button>

@@ -8,13 +8,16 @@ import {
   where,
   getDocs,
   updateDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { MdOutlineChangeCircle } from "react-icons/md";
 
 export function ModifyCategoryField() {
-  const { categories, setCategories } = useCategoryContext();
+  const { categories, setCategories, currentCategory, setCurrentCategory } =
+    useCategoryContext();
   const [selectedValue, setSelectedValue] = useState("");
   const [category, setCategory] = useState(selectedValue);
+  const [error, setError] = useState("");
   const { user } = UserAuth();
 
   const handleDropdownChange = (e) => {
@@ -29,8 +32,25 @@ export function ModifyCategoryField() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (category === "") return; // User cannot modify a category into a blank string
+    const trimmed = category.trim();
+
+    if (trimmed === "") return; // User cannot modify a category into a blank string
+
+    const reserved = ["none", "all data"];
+    const isDuplicate =
+      reserved.includes(trimmed.toLowerCase()) ||
+      categories.some(
+        (c) =>
+          c.toLowerCase() === trimmed.toLowerCase() &&
+          c.toLowerCase() !== selectedValue.toLowerCase()
+      );
+
+    if (isDuplicate) {
+      setError("Category already exists");
+      return;
+    }
 
     try {
       // Query to find user's specific categories with their email
@@ -61,18 +81,40 @@ export function ModifyCategoryField() {
 
       // Updates the categories in firestore array accordingly
       const updatedCategories = [...userData.categories];
-      updatedCategories[indexToUpdate] = category;
+      updatedCategories[indexToUpdate] = trimmed;
 
       await updateDoc(userDoc.ref, {
         categories: updatedCategories,
       });
 
+      // Propagate the rename to existing timer session history
+      const timerUseRef = collection(db, `timerData/${user.email}/timerUse`);
+      const timerQuery = query(
+        timerUseRef,
+        where("category", "==", selectedValue)
+      );
+      const timerSnapshot = await getDocs(timerQuery);
+      const timerDocs = timerSnapshot.docs;
+
+      for (let i = 0; i < timerDocs.length; i += 500) {
+        const batch = writeBatch(db);
+        timerDocs.slice(i, i + 500).forEach((timerDoc) => {
+          batch.update(timerDoc.ref, { category: trimmed });
+        });
+        await batch.commit();
+      }
+
       console.log("Successfully updated category value");
 
       // Update the categories context to fit the new firestore data
       setCategories(updatedCategories);
+
+      if (currentCategory === selectedValue) {
+        setCurrentCategory(trimmed);
+      }
     } catch (error) {
       console.log("Error updating array: ", error);
+      setError("Failed to modify category");
     }
   };
 
@@ -115,6 +157,7 @@ export function ModifyCategoryField() {
           <MdOutlineChangeCircle size={25} className="hover:text-white" />
         </button>
       </form>
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );
 }

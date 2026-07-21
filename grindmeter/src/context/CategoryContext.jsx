@@ -21,22 +21,29 @@ export function CategoryProvider({ children }) {
     try {
       const querySnapshot = await getDocs(q);
 
-      querySnapshot.forEach(async (doc) => {
-        const userData = doc.data();
-        const userCategories = userData.categories;
+      if (querySnapshot.empty) {
+        setCategories([]);
+        setCurrentCategory("None");
+        return;
+      }
 
-        setCategories(userCategories);
-      });
+      if (querySnapshot.size > 1) {
+        console.warn("Multiple category documents found for ", userEmail);
+      }
 
-      console.log("Successfully set user's categories to ", categories);
+      const userData = querySnapshot.docs[0].data();
+      setCategories(userData.categories);
     } catch (error) {
       console.log("Error fetching user's categories: ", error);
     }
   };
 
   useEffect(() => {
-    if (user) {
+    if (user?.email) {
       updateCategories(user.email);
+    } else {
+      setCategories([]);
+      setCurrentCategory("None");
     }
   }, [user]);
 

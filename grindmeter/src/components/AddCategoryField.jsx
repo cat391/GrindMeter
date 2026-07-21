@@ -16,6 +16,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 export default function AddCategoryField() {
   const { categories, setCategories } = useCategoryContext();
   const [category, setCategory] = useState("");
+  const [error, setError] = useState("");
   const { user } = UserAuth();
 
   const updateData = async (userEmail, newData) => {
@@ -44,19 +45,33 @@ export default function AddCategoryField() {
       console.log("Categories updated successfully");
 
       // Update the categories state to reflect the changes made
-      setCategories([...categories, category]);
+      setCategories([...categories, newData]);
       setCategory("");
     } catch (error) {
       console.log("Error updating document: ", error);
+      setError("Failed to add category");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (category === "") return; // Cannot add an empty category
+    const trimmed = category.trim();
 
-    await updateData(user.email, category);
+    if (trimmed === "") return; // Cannot add an empty category
+
+    const reserved = ["none", "all data"];
+    const isDuplicate =
+      reserved.includes(trimmed.toLowerCase()) ||
+      categories.some((c) => c.toLowerCase() === trimmed.toLowerCase());
+
+    if (isDuplicate) {
+      setError("Category already exists");
+      return;
+    }
+
+    await updateData(user.email, trimmed);
   };
 
   return (
@@ -77,6 +92,7 @@ export default function AddCategoryField() {
           <IoIosAddCircleOutline size={25} className="hover:text-white" />
         </button>
       </div>
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </form>
   );
 }
