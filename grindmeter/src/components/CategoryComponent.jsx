@@ -1,9 +1,9 @@
 import { useCategoryContext } from "../context/CategoryContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserAuth } from "../context/AuthContext";
 
 export default function CategoryComponent() {
-  const { categories, setCategories, currentCategory, setCurrentCategory } =
+  const { categories, currentCategory, setCurrentCategory } =
     useCategoryContext();
   const { user } = UserAuth();
 

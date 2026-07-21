@@ -1,7 +1,9 @@
+/* eslint-disable react-refresh/only-export-components -- this file also exports the useCategoryContext hook; splitting it out would require updating every importer across src/ */
 import { createContext, useState, useContext, useEffect } from "react";
 import { UserAuth } from "./AuthContext";
 import db from "../firebase-config";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import PropTypes from "prop-types";
 
 const CategoryContext = createContext();
 
@@ -60,3 +62,7 @@ export function CategoryProvider({ children }) {
     </CategoryContext.Provider>
   );
 }
+
+CategoryProvider.propTypes = {
+  children: PropTypes.node,
+};

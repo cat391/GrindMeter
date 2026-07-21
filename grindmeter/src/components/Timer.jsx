@@ -5,6 +5,7 @@ import { useRef, useEffect } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
 import YoutubeAudioPlayer from "./YoutubeAudioPlayer";
 import { convertToTimeStr } from "../utils/time";
+import PropTypes from "prop-types";
 
 export default function Timer({ durationID, isRunning, reset }) {
   const { volume } = useVolumeContext();
@@ -79,3 +80,9 @@ export default function Timer({ durationID, isRunning, reset }) {
     </div>
   );
 }
+
+Timer.propTypes = {
+  durationID: PropTypes.number,
+  isRunning: PropTypes.bool,
+  reset: PropTypes.number,
+};

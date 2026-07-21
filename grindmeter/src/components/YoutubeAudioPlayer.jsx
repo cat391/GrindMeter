@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import YouTube from "react-youtube";
 import { useVolumeContext } from "../context/PresetContext";
+import PropTypes from "prop-types";
 
 export default function YoutubeAudioPlayer({ videoID }) {
   const playerRef = useRef(null);
@@ -39,3 +40,7 @@ export default function YoutubeAudioPlayer({ videoID }) {
     </div>
   );
 }
+
+YoutubeAudioPlayer.propTypes = {
+  videoID: PropTypes.string,
+};

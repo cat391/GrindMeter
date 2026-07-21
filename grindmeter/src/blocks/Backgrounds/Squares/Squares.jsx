@@ -3,6 +3,7 @@
 */
 
 import { useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 
 const Squares = ({
   direction = "right",
@@ -155,6 +156,14 @@ const Squares = ({
       className="w-full h-full border-none block"
     ></canvas>
   );
+};
+
+Squares.propTypes = {
+  direction: PropTypes.string,
+  speed: PropTypes.number,
+  borderColor: PropTypes.string,
+  squareSize: PropTypes.number,
+  hoverFillColor: PropTypes.string,
 };
 
 export default Squares;

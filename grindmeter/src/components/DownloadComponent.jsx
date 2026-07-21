@@ -38,7 +38,7 @@ export default function DownloadComponent() {
         onClick={handleDownload}
         className="relative w-[150px] h-[40px] cursor-pointer flex items-center border border-[#17795E] bg-customGreen-100 overflow-hidden transition-all duration-300 group hover:bg-customGreen-200 active:border-[#146c54]"
       >
-        <span class="transition-all duration-300 transform translate-x-[22px] text-white text-xs group-hover:text-transparent">
+        <span className="transition-all duration-300 transform translate-x-[22px] text-white text-xs group-hover:text-transparent">
           JSON File
         </span>
         <span className="transition-all duration-300 absolute transform translate-x-[109px] h-full w-[39px] bg-customGreen-200 flex items-center justify-center group-hover:w-[148px] group-hover:translate-x-0 active:bg-customGreen-300">

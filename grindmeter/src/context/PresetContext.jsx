@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components -- this file also exports usePresetContext/useVolumeContext/useAmbienceContext hooks; splitting them out would require updating every importer across src/ */
 import { createContext, useState, useContext } from "react";
+import PropTypes from "prop-types";
 
 const PresetContext = createContext();
 const VolumeContext = createContext();
@@ -58,3 +60,7 @@ export function PresetProvider({ children }) {
     </PresetContext.Provider>
   );
 }
+
+PresetProvider.propTypes = {
+  children: PropTypes.node,
+};

@@ -1,12 +1,12 @@
 import { useContext, createContext, useEffect, useState } from "react";
 import {
   GoogleAuthProvider,
-  signInWithRedirect,
   signInWithPopup,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "../firebase-config.js";
+import PropTypes from "prop-types";
 
 const AuthContext = createContext();
 
@@ -41,4 +41,8 @@ export const AuthContextProvider = ({ children }) => {
 
 export const UserAuth = () => {
   return useContext(AuthContext);
+};
+
+AuthContextProvider.propTypes = {
+  children: PropTypes.node,
 };

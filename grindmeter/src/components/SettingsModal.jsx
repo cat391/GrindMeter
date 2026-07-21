@@ -1,5 +1,3 @@
-"use client";
-
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoIosLock } from "react-icons/io";
 import { usePresetContext } from "../context/PresetContext";
@@ -11,6 +9,7 @@ import { ModifyCategoryField } from "./ModifyCategoryField";
 import DeleteCategoryField from "./DeleteCategoryField";
 import { useState } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
+import PropTypes from "prop-types";
 
 function SettingsModal({ open, onClose }) {
   const { currentPresetIndex, setCurrentPresetIndex } = usePresetContext();
@@ -22,7 +21,7 @@ function SettingsModal({ open, onClose }) {
     rainAmbience,
     setRainAmbience,
   } = useAmbienceContext();
-  const { googleSignIn, user, logOut } = UserAuth();
+  const { user } = UserAuth();
   const [ambienceIsOn, setAmbienceIsOn] = useState(false);
 
   const handleClick = (e) => {
@@ -289,7 +288,7 @@ function SettingsModal({ open, onClose }) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
@@ -304,5 +303,10 @@ function SettingsModal({ open, onClose }) {
     </div>
   );
 }
+
+SettingsModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+};
 
 export default SettingsModal;

@@ -193,6 +193,7 @@ export default function useTimer(duration, isRunning, reset) {
       clearInterval(intervalRef.current);
       clearInterval(heartbeatRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 'time' is read only on the running→false transition; adding it would recreate the interval every tick
   }, [running]);
 
   const finished = time === 0;

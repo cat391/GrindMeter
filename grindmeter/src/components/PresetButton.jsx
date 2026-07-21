@@ -1,6 +1,7 @@
 import "../App.css";
 import { usePresetContext } from "../context/PresetContext";
 import { convertToTimeStr } from "../utils/time";
+import PropTypes from "prop-types";
 
 // Component for Timer "Preset" Buttons
 export default function PresetButton({ onClick, id }) {
@@ -19,3 +20,8 @@ export default function PresetButton({ onClick, id }) {
     </button>
   );
 }
+
+PresetButton.propTypes = {
+  onClick: PropTypes.func,
+  id: PropTypes.number,
+};

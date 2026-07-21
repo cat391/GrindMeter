@@ -161,7 +161,7 @@ export default function Login() {
               <div className="absolute top-8 left-8 flex items-center gap-8">
                 <div>
                   <h1 className="text-customGreen-100 text-3xl mb-4">
-                    {user.displayName}'s Profile
+                    {user.displayName}&apos;s Profile
                   </h1>
                   <button
                     onClick={handleSignOut}

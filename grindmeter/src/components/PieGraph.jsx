@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import db from "../firebase-config";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { formatLocalDate } from "../utils/date";
+import PropTypes from "prop-types";
 
 // Register Chart.js components needed for pie chart
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -44,7 +45,7 @@ const PieGraph = ({
           where("date", "<=", `${currentYear}-12-31`)
         );
         break;
-      case "Week":
+      case "Week": {
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7));
         startOfWeek.setHours(0, 0, 0, 0);
@@ -58,6 +59,7 @@ const PieGraph = ({
           where("date", "<=", formatLocalDate(endOfWeek))
         );
         break;
+      }
       case "Custom":
         q = query(
           timerUseRef,
@@ -184,6 +186,13 @@ const PieGraph = ({
       )}
     </div>
   );
+};
+
+PieGraph.propTypes = {
+  userEmail: PropTypes.string,
+  timeLine: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default PieGraph;

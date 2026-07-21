@@ -75,7 +75,7 @@ export default function Home() {
       resetTimer();
     }
     oldPresets.current = presets;
-  }, [presets]); // Causes error if you change another preset than the one you are on
+  }, [presets, displayedTime]); // Causes error if you change another preset than the one you are on
 
   // Change background is visual ambience is turned on
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function Home() {
       document.body.classList.add(cls);
       return () => document.body.classList.remove(cls);
     }
-  }, [visualAmbience, isOn]);
+  }, [visualAmbience, isOn, setTimerRunning]);
 
   return (
     <div>

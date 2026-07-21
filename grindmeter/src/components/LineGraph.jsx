@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import db from "../firebase-config";
 import { Line } from "react-chartjs-2";
+import PropTypes from "prop-types";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -78,7 +79,7 @@ const LineGraph = ({
           where("date", "<=", `${currentYear}-12-31`)
         );
         break;
-      case "Week":
+      case "Week": {
         const now = new Date();
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
@@ -93,6 +94,7 @@ const LineGraph = ({
           where("date", "<=", formatLocalDate(endOfWeek))
         );
         break;
+      }
       case "Custom":
         q = query(
           timerUseRef,
@@ -260,6 +262,13 @@ const LineGraph = ({
       )}
     </div>
   );
+};
+
+LineGraph.propTypes = {
+  userEmail: PropTypes.string,
+  timeLine: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
 };
 
 export default LineGraph;

@@ -1,5 +1,5 @@
 import { useCategoryContext } from "../context/CategoryContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import db from "../firebase-config";
 import {
@@ -58,7 +58,7 @@ async function deleteCategoryData(userEmail, categoryToDelete) {
 
 export default function DeleteData() {
   const [selectedValue, setSelectedValue] = useState("");
-  const { categories, setCategories } = useCategoryContext();
+  const { categories } = useCategoryContext();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const { user } = UserAuth();
