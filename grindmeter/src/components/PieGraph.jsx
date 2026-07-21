@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import db from "../firebase-config";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { formatLocalDate } from "../utils/date";
 
 // Register Chart.js components needed for pie chart
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -53,8 +54,8 @@ const PieGraph = ({
         endOfWeek.setHours(23, 59, 59, 999);
         q = query(
           timerUseRef,
-          where("date", ">=", startOfWeek.toISOString().split("T")[0]),
-          where("date", "<=", endOfWeek.toISOString().split("T")[0])
+          where("date", ">=", formatLocalDate(startOfWeek)),
+          where("date", "<=", formatLocalDate(endOfWeek))
         );
         break;
       case "Custom":
@@ -63,19 +64,6 @@ const PieGraph = ({
           where("date", ">=", startDate),
           where("date", "<=", endDate)
         );
-
-        // Change the time axis - days or weeks
-        const diffInDays = Math.floor(
-          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-
-        if (diffInDays > 31) {
-          timeLine = "Year"; // Sets x-axis to display in weeks
-        } else {
-          timeLine = "Month"; // Sets x-axis to display in days
-        }
-
         break;
       default:
         q = query(timerUseRef);
@@ -86,20 +74,22 @@ const PieGraph = ({
 
       snapshot.forEach((doc) => {
         const docData = doc.data();
-        const category = docData.category || "Uncategorized";
-        const duration = Math.floor(docData.duration / 60); // Convert to minutes
+        const category =
+          !docData.category || docData.category === "None"
+            ? "No Category"
+            : docData.category;
+        const duration = docData.duration || 0; // Raw seconds
 
-        if (duration > 0 && category != "None") {
-          categoryTotals[category] = (categoryTotals[category] || 0) + duration;
-        } else {
-          categoryTotals["No Category"] =
-            (categoryTotals["No Category"] || 0) + duration;
-        }
+        categoryTotals[category] = (categoryTotals[category] || 0) + duration;
       });
 
-      // Prepare data for pie chart
-      const categories = Object.keys(categoryTotals);
-      const durations = Object.values(categoryTotals);
+      // Prepare data for pie chart, converting to minutes and dropping zero-value slices
+      const categories = Object.keys(categoryTotals).filter(
+        (category) => Math.floor(categoryTotals[category] / 60) > 0
+      );
+      const durations = categories.map((category) =>
+        Math.floor(categoryTotals[category] / 60)
+      );
 
       const categoryColorMap = {
         "No Category": "#AAB2BD",
@@ -159,7 +149,7 @@ const PieGraph = ({
             const label = context.label || "";
             const value = context.raw || 0;
             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = Math.round((value / total) * 100);
+            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
             return `${label}: ${value} min (${percentage}%)`;
           },
         },

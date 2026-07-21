@@ -14,6 +14,7 @@ import {
   TimeScale,
 } from "chart.js";
 import "chartjs-adapter-date-fns"; // Adapter for time scale
+import { formatLocalDate } from "../utils/date";
 
 // Register Chart.js components including TimeScale for date handling
 ChartJS.register(
@@ -26,6 +27,17 @@ ChartJS.register(
   Legend,
   TimeScale
 );
+
+const getEffectiveTimeLine = (timeLine, startDate, endDate) => {
+  if (timeLine !== "Custom" || !startDate || !endDate) return timeLine;
+
+  const diffInDays = Math.floor(
+    (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+
+  return diffInDays > 31 ? "Year" : "Month"; // Year -> weeks, Month -> days
+};
 
 const LineGraph = ({
   userEmail,
@@ -77,8 +89,8 @@ const LineGraph = ({
         endOfWeek.setHours(23, 59, 59, 999); // End of day (23:59:59.999)
         q = query(
           timerUseRef,
-          where("date", ">=", startOfWeek.toISOString().split("T")[0]),
-          where("date", "<=", endOfWeek.toISOString().split("T")[0])
+          where("date", ">=", formatLocalDate(startOfWeek)),
+          where("date", "<=", formatLocalDate(endOfWeek))
         );
         break;
       case "Custom":
@@ -87,19 +99,6 @@ const LineGraph = ({
           where("date", ">=", startDate),
           where("date", "<=", endDate)
         );
-
-        // Change the time axis - days or weeks
-        const diffInDays = Math.floor(
-          (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-            (1000 * 60 * 60 * 24)
-        );
-
-        if (diffInDays > 31) {
-          timeLine = "Year"; // Sets x-axis to display in weeks
-        } else {
-          timeLine = "Month"; // Sets x-axis to display in days
-        }
-
         break;
       default:
         console.log(timeLine);
@@ -175,6 +174,8 @@ const LineGraph = ({
   }, [userEmail, timeLine, startDate, endDate]);
 
   // Chart options with a time scale for the x-axis
+  const effectiveTimeLine = getEffectiveTimeLine(timeLine, startDate, endDate);
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -182,7 +183,10 @@ const LineGraph = ({
       x: {
         type: "time",
         time: {
-          unit: timeLine === "Month" || timeLine === "Week" ? "day" : "week", // Adjust unit as needed (e.g., day, week, month)
+          unit:
+            effectiveTimeLine === "Month" || effectiveTimeLine === "Week"
+              ? "day"
+              : "week", // Adjust unit as needed (e.g., day, week, month)
           displayFormats: {
             day: "MMM d",
             week: "MMM d",
