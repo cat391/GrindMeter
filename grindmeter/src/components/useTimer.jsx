@@ -104,6 +104,10 @@ export default function useTimer(duration, isRunning, reset) {
           addTimerData(capped, categoryRef.current, userRef.current);
         }
       }
+      // Stop ticking now: the running state turns off a render later, and a
+      // tick in that gap would overwrite the reset with the old time.
+      clearInterval(intervalRef.current);
+      clearInterval(heartbeatRef.current);
       setTime(duration);
       remainingTimeRef.current = duration;
       // A reset/duration-switch also flips the timer off; tell the running
