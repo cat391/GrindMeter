@@ -4,14 +4,19 @@ import { useVolumeContext } from "../context/PresetContext";
 import { useRef, useEffect } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
 import YoutubeAudioPlayer from "./YoutubeAudioPlayer";
-import { convertToTimeStr } from "../utils/time";
+import TimeDisplay from "./TimeDisplay";
 import PropTypes from "prop-types";
 
-export default function Timer({ durationID, isRunning, reset }) {
+export default function Timer({
+  duration,
+  isRunning,
+  reset,
+  onDurationChange,
+}) {
   const { volume } = useVolumeContext();
   const { visualAmbience, timerRunning, brownAmbience, rainAmbience } =
     useAmbienceContext();
-  const { state, totalSeconds } = useTimer(durationID, isRunning, reset);
+  const { state, totalSeconds } = useTimer(duration, isRunning, reset);
   const audioRef = useRef(null);
 
   const playAudio = () => {
@@ -45,6 +50,12 @@ export default function Timer({ durationID, isRunning, reset }) {
     audioRef.current.volume = volume / 100;
   }, [volume]);
 
+  const glowClass = !(timerRunning && visualAmbience)
+    ? ""
+    : state
+    ? "[text-shadow:0_0_6px_rgba(255,0,0,0.5),0_0_12px_rgba(255,0,0,0.3)]"
+    : "[text-shadow:0_0_6px_rgba(255,255,255,0.5)]";
+
   return (
     <div>
       {timerRunning && brownAmbience ? (
@@ -56,33 +67,20 @@ export default function Timer({ durationID, isRunning, reset }) {
       ) : null}
 
       <audio ref={audioRef} src="/sounds/betav2-ringtone.wav" loop />
-      {timerRunning && visualAmbience ? (
-        <div
-          className={
-            state
-              ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700 [text-shadow:0_0_6px_rgba(255,0,0,0.5),0_0_12px_rgba(255,0,0,0.3)]"
-              : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400 [text-shadow:0_0_6px_rgba(255,255,255,0.5)]"
-          }
-        >
-          {convertToTimeStr(totalSeconds)}
-        </div>
-      ) : (
-        <div
-          className={
-            state
-              ? "flex items-center justify-center h-96 w-full text-8xl font-bold text-red-700"
-              : "flex items-center justify-center h-96 w-full text-8xl font-bold text-customBlack-400"
-          }
-        >
-          {convertToTimeStr(totalSeconds)}
-        </div>
-      )}
+      <TimeDisplay
+        seconds={totalSeconds}
+        isRunning={isRunning}
+        finished={state}
+        glowClass={glowClass}
+        onCommit={onDurationChange}
+      />
     </div>
   );
 }
 
 Timer.propTypes = {
-  durationID: PropTypes.number,
+  duration: PropTypes.number.isRequired,
   isRunning: PropTypes.bool,
   reset: PropTypes.number,
+  onDurationChange: PropTypes.func.isRequired,
 };

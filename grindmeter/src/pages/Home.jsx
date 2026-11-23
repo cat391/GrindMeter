@@ -16,6 +16,8 @@ export default function Home() {
   const [isOn, setIsOn] = useState(false);
   const { presets } = usePresetContext();
   const [displayedTime, setDisplayedTime] = useState(0);
+  // A time set directly on the timer; takes priority over the selected preset
+  const [customSeconds, setCustomSeconds] = useState(null);
   const [shouldReset, setShouldReset] = useState(0);
   const oldPresets = useRef(presets);
   const { visualAmbience, setTimerRunning } = useAmbienceContext();
@@ -56,13 +58,25 @@ export default function Home() {
     );
 
   const handleTimerChange = (id) => {
+    if (id !== displayedTime || customSeconds !== null) {
+      setShouldReset((prev) => prev + 1);
+    }
     setDisplayedTime(id);
+    setCustomSeconds(null);
+    setIsOn(false);
+  };
+
+  const handleCustomTime = (seconds) => {
+    setCustomSeconds(seconds);
+    setShouldReset((prev) => prev + 1);
     setIsOn(false);
   };
 
   const toggleTimer = () => setIsOn((prev) => (prev ? false : true));
 
+  // Always returns to the selected preset, discarding any edited time
   const resetTimer = () => {
+    setCustomSeconds(null);
     setShouldReset((prev) => prev + 1);
     setIsOn(false);
   };
@@ -71,7 +85,11 @@ export default function Home() {
     let shouldResetTimer = false;
     presets.forEach((element, index) => {
       // Finds the index of the preset that changed, and compares that index to the current preset being used
-      if (element !== oldPresets.current[index] && index === displayedTime) {
+      if (
+        element !== oldPresets.current[index] &&
+        index === displayedTime &&
+        customSeconds === null
+      ) {
         shouldResetTimer = true; // Must reset displayed timer, as it was changed
       }
     });
@@ -80,7 +98,7 @@ export default function Home() {
       resetTimer();
     }
     oldPresets.current = presets;
-  }, [presets, displayedTime]); // Causes error if you change another preset than the one you are on
+  }, [presets, displayedTime, customSeconds]); // Causes error if you change another preset than the one you are on
 
   // Change background is visual ambience is turned on
   useEffect(() => {
@@ -101,9 +119,10 @@ export default function Home() {
     <div className="pt-14">
       <h2>
         <Timer
-          durationID={displayedTime}
+          duration={customSeconds ?? presets[displayedTime]}
           isRunning={isOn}
           reset={shouldReset}
+          onDurationChange={handleCustomTime}
         />
       </h2>
 

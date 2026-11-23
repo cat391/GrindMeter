@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { usePresetContext } from "../context/PresetContext";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import db from "../firebase-config";
 import {
   collection,
@@ -51,16 +50,15 @@ async function addTimerData(duration, currentCategory, user) {
   }
 }
 
+// `duration` is in seconds and takes effect when `reset` increases.
 export default function useTimer(duration, isRunning, reset) {
-  const { presets } = usePresetContext();
-  const [time, setTime] = useState(presets[duration]);
+  const [time, setTime] = useState(duration);
   const [running, setRunning] = useState(isRunning);
   const { currentCategory } = useCategoryContext();
   const { user } = UserAuth();
-  const remainingTimeRef = useRef(presets[duration]);
+  const remainingTimeRef = useRef(duration);
   const intervalRef = useRef(null);
   const prevResetVal = useRef(reset);
-  const prevDurationVal = useRef(duration);
   const skipPauseRecordRef = useRef(false);
   const finishedRef = useRef(false);
 
@@ -68,7 +66,7 @@ export default function useTimer(duration, isRunning, reset) {
   const lastHeartbeatRef = useRef(null);
   // Timer time (seconds) still available to be recorded this run; every write
   // is capped by this so the session total never exceeds its duration.
-  const remainingBudgetRef = useRef(presets[duration]);
+  const remainingBudgetRef = useRef(duration);
 
   // Track timer session data
   const startTimeRef = useRef(null);
@@ -91,9 +89,9 @@ export default function useTimer(duration, isRunning, reset) {
     setRunning(isRunning);
   }, [isRunning]);
 
-  // Resets time if startingSeconds is reset or changed
-  useEffect(() => {
-    if (reset > prevResetVal.current || prevDurationVal.current !== duration) {
+  // Applies the current duration on reset, before paint so the old time never flashes
+  useLayoutEffect(() => {
+    if (reset > prevResetVal.current) {
       // This runs before the paired pause, whose recording is skipped below —
       // so the active run's un-heartbeated tail must be recorded here.
       if (running && startTimeRef.current && !finishedRef.current) {
@@ -106,16 +104,15 @@ export default function useTimer(duration, isRunning, reset) {
           addTimerData(capped, categoryRef.current, userRef.current);
         }
       }
-      setTime(presets[duration]);
-      remainingTimeRef.current = presets[duration];
+      setTime(duration);
+      remainingTimeRef.current = duration;
       // A reset/duration-switch also flips the timer off; tell the running
       // effect not to record the resulting pause as session time.
       skipPauseRecordRef.current = true;
     }
 
     prevResetVal.current = reset;
-    prevDurationVal.current = duration;
-  }, [duration, reset, presets, running]);
+  }, [duration, reset, running]);
 
   useEffect(() => {
     if (running) {
