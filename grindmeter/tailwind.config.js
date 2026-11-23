@@ -22,9 +22,15 @@ export default {
           "0%": { "background-position": "100%" },
           "100%": { "background-position": "-100%" },
         },
+        phosphor: {
+          "0%, 91%, 93.5%, 96.5%, 100%": { opacity: "1" },
+          "92%": { opacity: "0.82" },
+          "95%": { opacity: "0.9" },
+        },
       },
       animation: {
         shine: "shine 5s linear infinite",
+        phosphor: "phosphor 7s linear infinite",
       },
     },
   },

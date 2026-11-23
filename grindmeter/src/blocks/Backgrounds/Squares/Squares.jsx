@@ -24,26 +24,33 @@ const Squares = ({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let width = 0;
+    let height = 0;
+
     const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      numSquaresX.current = Math.ceil(canvas.width / squareSize) + 1;
-      numSquaresY.current = Math.ceil(canvas.height / squareSize) + 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = canvas.offsetWidth;
+      height = canvas.offsetHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      numSquaresX.current = Math.ceil(width / squareSize) + 1;
+      numSquaresY.current = Math.ceil(height / squareSize) + 1;
     };
 
-    window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
     const drawGrid = () => {
       if (!ctx) return;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, width, height);
 
       const startX = Math.floor(gridOffset.current.x / squareSize) * squareSize;
       const startY = Math.floor(gridOffset.current.y / squareSize) * squareSize;
 
-      for (let x = startX; x < canvas.width + squareSize; x += squareSize) {
-        for (let y = startY; y < canvas.height + squareSize; y += squareSize) {
+      for (let x = startX; x < width + squareSize; x += squareSize) {
+        for (let y = startY; y < height + squareSize; y += squareSize) {
           const squareX = x - (gridOffset.current.x % squareSize);
           const squareY = y - (gridOffset.current.y % squareSize);
 
@@ -63,22 +70,29 @@ const Squares = ({
       }
 
       const gradient = ctx.createRadialGradient(
-        canvas.width / 2,
-        canvas.height / 2,
+        width / 2,
+        height / 2,
         0,
-        canvas.width / 2,
-        canvas.height / 2,
-        Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2
+        width / 2,
+        height / 2,
+        Math.sqrt(width ** 2 + height ** 2) / 2
       );
       gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
       gradient.addColorStop(1, "#060606");
 
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, width, height);
     };
 
+    // Follows the element, since page content can resize it without a window resize
+    const resizeObserver = new ResizeObserver(() => {
+      resizeCanvas();
+      drawGrid();
+    });
+    resizeObserver.observe(canvas);
+
     const updateAnimation = () => {
-      const effectiveSpeed = Math.max(speed, 0.1);
+      const effectiveSpeed = motionQuery.matches ? 0 : Math.max(speed, 0.1);
       switch (direction) {
         case "right":
           gridOffset.current.x =
@@ -143,7 +157,7 @@ const Squares = ({
     requestRef.current = requestAnimationFrame(updateAnimation);
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
+      resizeObserver.disconnect();
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseleave", handleMouseLeave);
