@@ -1,0 +1,5 @@
+.env
+.env.*
+.firebase
+dist
+node_modules
