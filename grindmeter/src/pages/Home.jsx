@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { createRef, useState, useEffect, useRef } from "react";
+import { useOutletContext } from "react-router-dom";
 import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
 import "../App.css";
-import { BiPause, BiReset, BiPlay } from "react-icons/bi";
+import { BiCog, BiPause, BiReset, BiPlay } from "react-icons/bi";
 import { usePresetContext } from "../context/PresetContext";
 import CategoryComponent from "../components/CategoryComponent";
 import { useAmbienceContext } from "../context/PresetContext";
@@ -20,8 +21,12 @@ export default function Home() {
   const { visualAmbience, setTimerRunning } = useAmbienceContext();
   const { currentCategory } = useCategoryContext();
   const { user } = UserAuth();
+  const { openSettings } = useOutletContext();
   // Stuff for CSS Transition
   const key = isOn && visualAmbience ? "AMB" : "CAT";
+  // Entering and exiting views animate at once, so each needs its own ref
+  const categoryRefs = useRef({ AMB: createRef(), CAT: createRef() });
+  const presetRefs = useRef({ AMB: createRef(), CAT: createRef() });
   const content1 =
     isOn && visualAmbience && user ? (
       <div className="text-white font-bold">{currentCategory}</div>
@@ -93,7 +98,7 @@ export default function Home() {
   }, [visualAmbience, isOn, setTimerRunning]);
 
   return (
-    <div>
+    <div className="pt-14">
       <h2>
         <Timer
           durationID={displayedTime}
@@ -106,12 +111,16 @@ export default function Home() {
         <TransitionGroup component={null}>
           <CSSTransition
             key={key}
+            nodeRef={categoryRefs.current[key]}
             timeout={2000}
             classNames="fade"
             mountOnEnter
             unmountOnExit
           >
-            <div className="absolute inset-0 flex justify-center items-center">
+            <div
+              ref={categoryRefs.current[key]}
+              className="absolute inset-0 flex justify-center items-center"
+            >
               {content1}
             </div>
           </CSSTransition>
@@ -122,12 +131,18 @@ export default function Home() {
         <TransitionGroup component={null}>
           <CSSTransition
             key={key}
+            nodeRef={presetRefs.current[key]}
             timeout={2000}
             classNames="preset-collapse"
             mountOnEnter
             unmountOnExit
           >
-            <div className="flex justify-center items-center">{content2}</div>
+            <div
+              ref={presetRefs.current[key]}
+              className="flex justify-center items-center"
+            >
+              {content2}
+            </div>
           </CSSTransition>
         </TransitionGroup>
       </div>
@@ -154,6 +169,19 @@ export default function Home() {
           onClick={resetTimer}
         >
           <BiReset />
+        </button>
+        <button
+          aria-label="Settings"
+          title="Settings"
+          className={`cursor-pointer transition-all bg-customBlack-300 text-white px-6 py-2 rounded-lg
+    border-customBlack-200
+    border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+    active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ${
+      isOn && visualAmbience ? "text-2xl" : "text-3xl"
+    }`}
+          onClick={openSettings}
+        >
+          <BiCog />
         </button>
       </div>
     </div>

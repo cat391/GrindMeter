@@ -140,7 +140,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden">
+    <div className="relative min-h-screen w-full flex items-center justify-center px-4 py-16 overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full">
         <Squares
           direction="diagonal"
