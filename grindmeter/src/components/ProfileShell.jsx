@@ -6,18 +6,10 @@ const CLOCK_CLEARING =
   "radial-gradient(ellipse max(32vw, 20rem) max(46vh, 22rem) at 50% 50%, #121212 45%, rgb(18 18 18 / 0.8) 68%, rgb(18 18 18 / 0) 100%)";
 
 // One grid stays mounted across the intro and dashboard so it never restarts
-export default function ProfileShell({ quiet, children }) {
+export default function ProfileShell({ cleared, children }) {
   return (
-    <div
-      className={`relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden px-4 py-16 transition-colors duration-1000 motion-reduce:transition-none ${
-        quiet ? "bg-customBlack-500" : "bg-customBlack-100"
-      }`}
-    >
-      <div
-        className={`absolute inset-0 transition-opacity duration-1000 motion-reduce:transition-none ${
-          quiet ? "opacity-50" : "opacity-100"
-        }`}
-      >
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-customBlack-500 px-4 py-20">
+      <div className="absolute inset-0 opacity-50">
         <Squares
           direction="diagonal"
           speed={0.25}
@@ -30,7 +22,7 @@ export default function ProfileShell({ quiet, children }) {
         aria-hidden="true"
         style={{ backgroundImage: CLOCK_CLEARING }}
         className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 motion-reduce:transition-none ${
-          quiet ? "opacity-100" : "opacity-0"
+          cleared ? "opacity-100" : "opacity-0"
         }`}
       />
       {children}
@@ -39,6 +31,6 @@ export default function ProfileShell({ quiet, children }) {
 }
 
 ProfileShell.propTypes = {
-  quiet: PropTypes.bool.isRequired,
+  cleared: PropTypes.bool.isRequired,
   children: PropTypes.node,
 };

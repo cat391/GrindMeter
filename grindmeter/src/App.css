@@ -89,3 +89,28 @@
 .set-button:active {
   box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
 } */
+
+/* A slim scrollbar for lists inside the dark panels */
+.quiet-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.quiet-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quiet-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.14);
+}
+
+.quiet-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgb(35 169 70 / 0.75);
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .quiet-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+  }
+}

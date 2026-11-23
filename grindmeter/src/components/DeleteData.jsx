@@ -1,6 +1,6 @@
 import { useCategoryContext } from "../context/CategoryContext";
-import { useState } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { useRef, useState } from "react";
+import PropTypes from "prop-types";
 import db from "../firebase-config";
 import {
   collection,
@@ -11,7 +11,6 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { UserAuth } from "../context/AuthContext";
-import { IoIosClose } from "react-icons/io";
 
 async function deleteCategoryData(userEmail, categoryToDelete) {
   if (!userEmail) return;
@@ -56,113 +55,116 @@ async function deleteCategoryData(userEmail, categoryToDelete) {
   }
 }
 
-export default function DeleteData() {
+const describeTarget = (value) => {
+  if (value === "All Data") return "all your timer data";
+  return `your ${value === "None" ? "No Category" : value} data`;
+};
+
+export default function DeleteData({ className = "" }) {
+  const dialogRef = useRef(null);
   const [selectedValue, setSelectedValue] = useState("");
-  const { categories } = useCategoryContext();
-  const [open, setOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
+  const { categories } = useCategoryContext();
   const { user } = UserAuth();
 
-  const handleDropdownChange = (e) => {
-    setSelectedValue(e.target.value);
+  const closeDialog = () => dialogRef.current.close();
+
+  const resetDialog = () => {
+    setSelectedValue("");
+    setError("");
   };
 
-  const closeModal = () => {
+  const handleDelete = async () => {
     setError("");
-    setOpen(false);
-  };
-
-  const handleFinalRemoveDataClick = async () => {
-    setError("");
+    setDeleting(true);
     try {
       await deleteCategoryData(user.email, selectedValue);
-      closeModal();
+      closeDialog();
     } catch (err) {
       console.error("Error deleting data: ", err);
       setError("Failed to delete data. Please try again.");
+    } finally {
+      setDeleting(false);
     }
   };
 
   return (
     <>
-      <div
-        className={`fixed z-50 inset-0 flex justify-center items-center transition-colors ${
-          open ? "visible bg-black/40" : "invisible"
-        }`}
-        onClick={closeModal}
+      <button
+        type="button"
+        onClick={() => dialogRef.current.showModal()}
+        className={className}
       >
-        <div
-          className="bg-customBlack-200 p-6 rounded-lg relative w-[300px]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex justify-between items-start mb-3">
-            <h1 className="text-lg font-bold">Delete Data?</h1>
-            <button
-              className="hover:bg-customBlack-300 rounded-full p-1 -mt-2 -mr-2"
-              onClick={closeModal}
-            >
-              <IoIosClose size={24} />
-            </button>
-          </div>
+        Delete data
+      </button>
 
-          <label className="block mb-6 text-sm leading-tight">
-            Are you sure you want to permanently delete
-            {selectedValue === "All Data"
-              ? " all your data?"
-              : ` your ${selectedValue} data?`}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="delete-data-title"
+        onClose={resetDialog}
+        onClick={(event) => {
+          if (event.target === dialogRef.current) closeDialog();
+        }}
+        className="m-auto w-[min(92vw,24rem)] rounded-xl border border-white/10 bg-customBlack-500 p-0 text-white shadow-2xl backdrop:bg-black/70"
+      >
+        <div className="p-6">
+          <h2
+            id="delete-data-title"
+            className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/50"
+          >
+            Delete data
+          </h2>
+
+          <label className="mt-5 block text-sm text-white/80">
+            What should be deleted?
+            <select
+              value={selectedValue}
+              onChange={(event) => setSelectedValue(event.target.value)}
+              className="mt-2 w-full rounded border border-white/15 bg-customBlack-100 px-3 py-2 font-mono text-xs text-white outline-none transition-colors focus:border-white/40"
+            >
+              <option value="">Select data</option>
+              <option value="All Data">All Data</option>
+              {categories.slice(1).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+              <option value="None">No Category</option>
+            </select>
           </label>
 
-          {error && <p className="text-red-400 text-sm mb-3">{error}</p>}
+          <p className="mt-4 min-h-10 text-sm leading-5 text-white/60">
+            {selectedValue
+              ? `This permanently deletes ${describeTarget(selectedValue)}. It can't be undone.`
+              : "Choose what to remove."}
+          </p>
 
-          <div className="flex justify-end space-x-3">
+          {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+
+          <div className="mt-5 flex justify-end gap-2 font-mono text-xs">
             <button
-              className="border-2 border-customBlack-400 bg-customBlack-300 text-sm py-1 px-3 rounded-md border-opacity-20 "
-              onClick={closeModal}
+              type="button"
+              onClick={closeDialog}
+              className="rounded border border-white/15 px-3 py-2 text-white/70 transition-colors hover:text-white"
             >
               Cancel
             </button>
             <button
-              className="border-2 border-red-600 text-red-400 text-sm py-1 px-3 rounded-md
-                 transition duration-100 ease-in-out hover:bg-red-600 hover:text-white"
-              onClick={handleFinalRemoveDataClick}
+              type="button"
+              onClick={handleDelete}
+              disabled={!selectedValue || deleting}
+              className="rounded border border-red-500/70 px-3 py-2 text-red-400 transition-colors enabled:hover:bg-red-600 enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Delete
+              {deleting ? "Deleting" : "Delete"}
             </button>
           </div>
         </div>
-      </div>
-      <div className="bg-customBlack-200 p-6 rounded-lg h-[120px]">
-        <label className="block mb-3 font-medium">Delete Data</label>
-        <div className="flex items-center space-x-2">
-          <select
-            className="bg-customBlack-300 opacity-75 px-3 py-1 outline-none w-28 text-sm text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10 appearance-none"
-            value={selectedValue}
-            onChange={handleDropdownChange}
-          >
-            <option value=""></option>
-            <option value="All Data">All Data</option>
-            {categories.slice(1).map((category, index) => (
-              <option key={index} value={category}>
-                {category}
-              </option>
-            ))}
-            <option value="None">No Category</option>
-          </select>
-          <button
-            className={`p-2 rounded-md ${
-              selectedValue
-                ? "hover:bg-customBlack-300 cursor-pointer"
-                : "cursor-not-allowed opacity-50"
-            }`}
-            onClick={() => {
-              selectedValue !== "" && setOpen(true);
-            }}
-            disabled={!selectedValue}
-          >
-            <FaRegTrashAlt />
-          </button>
-        </div>
-      </div>
+      </dialog>
     </>
   );
 }
+
+DeleteData.propTypes = {
+  className: PropTypes.string,
+};

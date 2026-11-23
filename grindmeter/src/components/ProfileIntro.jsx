@@ -61,7 +61,12 @@ export default function ProfileIntro({ onSignIn, onExited }) {
         className="group pointer-events-auto flex cursor-pointer flex-col items-center gap-3 rounded-2xl bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-customGreen-100 focus-visible:ring-offset-8 focus-visible:ring-offset-customBlack-500"
       >
         <AsciiClock phase={phase} lifted={lifted} />
-        <DecodedHeadline leaving={leaving} />
+        <DecodedHeadline
+          text="Start your grind."
+          accent="grind."
+          leaving={leaving}
+          className="text-4xl sm:text-6xl"
+        />
       </button>
       <p
         role="status"
