@@ -28,3 +28,6 @@ dist-ssr
 
 .vercel
 .env*
+
+# Firebase CLI deploy cache
+.firebase

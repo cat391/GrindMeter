@@ -21,6 +21,6 @@ Staying focused is hard, especially in college. I built Grindmeter to cut the no
 
 ## 🔗 Website Link 
 
-https://studytimer-9a3ac.web.app/ 
+https://grindmeter-sand.vercel.app/
 
 

@@ -1,15 +1,16 @@
 {
   "hosting": {
-    "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
+    "public": "firebase-redirect",
+    "redirects": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/",
+        "destination": "https://grindmeter-sand.vercel.app/",
+        "type": 301
+      },
+      {
+        "regex": "^/(?P<path>(?:[^_]|_[^_]).*)$",
+        "destination": "https://grindmeter-sand.vercel.app/:path",
+        "type": 301
       }
     ]
   }
