@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocsFromServer } from "firebase/firestore";
 import PropTypes from "prop-types";
 import db from "../firebase-config";
 import { UserAuth } from "../context/AuthContext";
@@ -13,9 +13,9 @@ export default function DownloadComponent({ className = "" }) {
     setFailed(false);
 
     try {
-      // Convert user's data to JSON format
+      // From the server, so a bad connection can't produce an incomplete file
       const timerUseRef = collection(db, `timerData/${user.email}/timerUse`);
-      const querySnapshot = await getDocs(timerUseRef);
+      const querySnapshot = await getDocsFromServer(timerUseRef);
 
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,

@@ -1,8 +1,11 @@
 import {
+  addDoc,
   arrayUnion,
   collection,
-  getDocs,
+  doc,
+  getDocsFromServer,
   query,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -26,27 +29,49 @@ export function categoryNameError(name, categories, currentName = "") {
   return taken ? "Category already exists" : "";
 }
 
+// Only call once the server has confirmed this account has no category record
+export async function createUserRecords(userEmail) {
+  await addDoc(collection(db, "categories"), {
+    userEmail,
+    categories: ["None"],
+  });
+  await setDoc(doc(db, "timerData", userEmail), { userEmail }, { merge: true });
+}
+
+// These read from the server because an offline read can be empty or partial,
+// which would make a rename or delete skip saved time.
 async function categoriesDocument(userEmail) {
-  const snapshot = await getDocs(
+  const snapshot = await getDocsFromServer(
     query(collection(db, "categories"), where("userEmail", "==", userEmail))
   );
   if (snapshot.empty) throw new Error("No categories found for this account");
   return snapshot.docs[0];
 }
 
-// Keeps session history attached when a category is renamed or removed
-async function moveSessions(userEmail, fromCategory, toCategory) {
-  const snapshot = await getDocs(
+// Moves session history first and saves the name list in the last batch, so a
+// failure leaves the old category in place and the action can be retried.
+async function moveSessionsAndSaveNames(
+  userEmail,
+  categoriesRef,
+  categories,
+  fromCategory,
+  toCategory
+) {
+  const sessions = await getDocsFromServer(
     query(
       collection(db, `timerData/${userEmail}/timerUse`),
       where("category", "==", fromCategory)
     )
   );
-  for (let start = 0; start < snapshot.docs.length; start += BATCH_LIMIT) {
+  const updates = [
+    ...sessions.docs.map((session) => [session.ref, { category: toCategory }]),
+    [categoriesRef, { categories }],
+  ];
+  for (let start = 0; start < updates.length; start += BATCH_LIMIT) {
     const batch = writeBatch(db);
-    snapshot.docs.slice(start, start + BATCH_LIMIT).forEach((session) => {
-      batch.update(session.ref, { category: toCategory });
-    });
+    updates
+      .slice(start, start + BATCH_LIMIT)
+      .forEach(([ref, data]) => batch.update(ref, data));
     await batch.commit();
   }
 }
@@ -63,9 +88,13 @@ export async function renameCategory(userEmail, currentName, newName) {
   const categories = saved.map((name) =>
     name === currentName ? newName : name
   );
-  await updateDoc(document.ref, { categories });
-  await moveSessions(userEmail, currentName, newName);
-  return categories;
+  await moveSessionsAndSaveNames(
+    userEmail,
+    document.ref,
+    categories,
+    currentName,
+    newName
+  );
 }
 
 export async function deleteCategory(userEmail, name) {
@@ -73,7 +102,11 @@ export async function deleteCategory(userEmail, name) {
   const saved = document.data().categories;
   if (!saved.includes(name)) throw new Error("Category not found");
   const categories = saved.filter((category) => category !== name);
-  await updateDoc(document.ref, { categories });
-  await moveSessions(userEmail, name, "None");
-  return categories;
+  await moveSessionsAndSaveNames(
+    userEmail,
+    document.ref,
+    categories,
+    name,
+    "None"
+  );
 }

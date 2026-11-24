@@ -4,54 +4,32 @@ import PropTypes from "prop-types";
 import db from "../firebase-config";
 import {
   collection,
+  getDocsFromServer,
   query,
   where,
-  getDocs,
   writeBatch,
-  deleteDoc,
 } from "firebase/firestore";
 import { UserAuth } from "../context/AuthContext";
+
+const BATCH_LIMIT = 500;
 
 async function deleteCategoryData(userEmail, categoryToDelete) {
   if (!userEmail) return;
 
-  try {
-    const timerUseRef = collection(db, `timerData/${userEmail}/timerUse`);
+  const timerUseRef = collection(db, `timerData/${userEmail}/timerUse`);
+  const target =
+    categoryToDelete === "All Data"
+      ? timerUseRef
+      : query(timerUseRef, where("category", "==", categoryToDelete));
 
-    if (categoryToDelete === "All Data") {
-      const querySnapshot = await getDocs(timerUseRef);
-
-      // Batch delete for better performance
-      const batch = writeBatch(db);
-      querySnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      await batch.commit();
-      console.log(`Deleted all ${querySnapshot.size} timer records`);
-
-      return querySnapshot.size;
-    } else {
-      // Query all documents with the specified category
-      const q = query(timerUseRef, where("category", "==", categoryToDelete));
-
-      const querySnapshot = await getDocs(q);
-
-      // Delete each matching document
-      const deletePromises = querySnapshot.docs.map((doc) =>
-        deleteDoc(doc.ref)
-      );
-
-      await Promise.all(deletePromises);
-      console.log(
-        `Deleted ${deletePromises.length} documents for category: ${categoryToDelete}`
-      );
-
-      return deletePromises.length;
-    }
-  } catch (error) {
-    console.error("Error deleting category data: ", error);
-    throw error;
+  // From the server, so a bad connection fails instead of deleting only part
+  const { docs } = await getDocsFromServer(target);
+  for (let start = 0; start < docs.length; start += BATCH_LIMIT) {
+    const batch = writeBatch(db);
+    docs
+      .slice(start, start + BATCH_LIMIT)
+      .forEach((session) => batch.delete(session.ref));
+    await batch.commit();
   }
 }
 
@@ -125,11 +103,13 @@ export default function DeleteData({ className = "" }) {
             >
               <option value="">Select data</option>
               <option value="All Data">All Data</option>
-              {categories.slice(1).map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
+              {categories
+                .filter((category) => category !== "None")
+                .map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               <option value="None">No Category</option>
             </select>
           </label>

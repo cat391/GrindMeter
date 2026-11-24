@@ -152,7 +152,7 @@ CategoryRow.propTypes = {
 
 export default function CategoryManager({ onNavigate }) {
   const { user } = UserAuth();
-  const { categories, setCategories, currentCategory, setCurrentCategory } =
+  const { categories, currentCategory, setCurrentCategory } =
     useCategoryContext();
   const [draft, setDraft] = useState("");
   const [adding, setAdding] = useState(false);
@@ -192,7 +192,6 @@ export default function CategoryManager({ onNavigate }) {
     setError("");
     try {
       await addCategory(user.email, trimmed);
-      setCategories((current) => [...current, trimmed]);
       setDraft("");
     } catch (err) {
       console.error("Couldn't add category", err);
@@ -203,12 +202,12 @@ export default function CategoryManager({ onNavigate }) {
   };
 
   const handleRename = async (currentName, newName) => {
-    setCategories(await renameCategory(user.email, currentName, newName));
+    await renameCategory(user.email, currentName, newName);
     if (currentCategory === currentName) setCurrentCategory(newName);
   };
 
   const handleDelete = async (name) => {
-    setCategories(await deleteCategory(user.email, name));
+    await deleteCategory(user.email, name);
     if (currentCategory === name) setCurrentCategory("None");
   };
 

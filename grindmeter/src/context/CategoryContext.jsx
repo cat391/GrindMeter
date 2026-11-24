@@ -2,8 +2,9 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import { UserAuth } from "./AuthContext";
 import db from "../firebase-config";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import PropTypes from "prop-types";
+import { createUserRecords } from "../utils/categoryStore";
 
 const CategoryContext = createContext();
 
@@ -13,47 +14,47 @@ export function useCategoryContext() {
 
 export function CategoryProvider({ children }) {
   const { user } = UserAuth();
+  const email = user?.email;
   const [categories, setCategories] = useState([]);
   const [currentCategory, setCurrentCategory] = useState("None");
 
-  const updateCategories = async (userEmail) => {
-    const categoriesRef = collection(db, "categories");
-    const q = query(categoriesRef, where("userEmail", "==", userEmail));
-
-    try {
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        setCategories([]);
-        setCurrentCategory("None");
-        return;
-      }
-
-      if (querySnapshot.size > 1) {
-        console.warn("Multiple category documents found for ", userEmail);
-      }
-
-      const userData = querySnapshot.docs[0].data();
-      setCategories(userData.categories);
-    } catch (error) {
-      console.log("Error fetching user's categories: ", error);
-    }
-  };
-
   useEffect(() => {
-    if (user?.email) {
-      updateCategories(user.email);
-    } else {
+    if (!email) {
       setCategories([]);
       setCurrentCategory("None");
+      return undefined;
     }
-  }, [user]);
+
+    let creating = false;
+    // Metadata changes tell us when the server confirms a cached result
+    return onSnapshot(
+      query(collection(db, "categories"), where("userEmail", "==", email)),
+      { includeMetadataChanges: true },
+      (snapshot) => {
+        if (!snapshot.empty) {
+          if (snapshot.size > 1) {
+            console.warn("Multiple category documents found for this account");
+          }
+          setCategories(snapshot.docs[0].data().categories);
+          return;
+        }
+        // Empty and cached only means the server hasn't answered yet, so an
+        // existing account on a bad connection must not be treated as new.
+        if (snapshot.metadata.fromCache || creating) return;
+        creating = true;
+        createUserRecords(email).catch((error) => {
+          creating = false;
+          console.error("Error creating account records: ", error);
+        });
+      },
+      (error) => console.error("Error loading categories: ", error)
+    );
+  }, [email]);
 
   return (
     <CategoryContext.Provider
       value={{
         categories,
-        setCategories,
         currentCategory,
         setCurrentCategory,
       }}

@@ -23,11 +23,13 @@ export default function CategoryComponent() {
         className="absolute inset-0 w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]"
       >
         <option value="None">No category</option>
-        {categories.slice(1).map((category, index) => (
-          <option key={index} value={category}>
-            {category}
-          </option>
-        ))}
+        {categories
+          .filter((category) => category !== "None")
+          .map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
       </select>
     </label>
   );
