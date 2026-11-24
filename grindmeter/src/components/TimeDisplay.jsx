@@ -59,7 +59,7 @@ export default function TimeDisplay({
   seconds,
   isRunning,
   finished,
-  glowClass,
+  glowClass = "",
   onCommit,
 }) {
   const [draft, setDraft] = useState(null);
@@ -222,9 +222,9 @@ export default function TimeDisplay({
   const timeStr = convertToTimeStr(seconds);
 
   return (
-    <div className="flex h-96 w-full items-center justify-center">
+    <div className="flex w-full items-center justify-center">
       <div
-        className={`relative inline-flex text-[min(6rem,20vw)] font-bold leading-none tabular-nums transition-colors duration-200 ${baseColor} ${glowClass} ${
+        className={`relative inline-flex text-[min(6rem,19vw,24dvh)] font-bold leading-none tabular-nums transition-[color,text-shadow] duration-[200ms,1000ms] motion-reduce:transition-none ${baseColor} ${glowClass} ${
           canHover ? "hover:text-white" : ""
         }`}
         onBlur={handleBlur}

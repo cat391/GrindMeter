@@ -26,7 +26,7 @@ export function PresetProvider({ children }) {
   // Volume Context
   const [volume, setVolume] = useState(100);
   // Ambience Context
-  const [visualAmbience, setVisualAmbience] = useState(false);
+  const [visualAmbience, setVisualAmbience] = useState(true);
   const [timerRunning, setTimerRunning] = useState(false);
   const [brownAmbience, setBrownAmbience] = useState(false);
   const [rainAmbience, setRainAmbience] = useState(false);

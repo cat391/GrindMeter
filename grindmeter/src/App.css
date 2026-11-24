@@ -114,3 +114,65 @@
     scrollbar-color: rgb(255 255 255 / 0.14) transparent;
   }
 }
+
+/* A thin slider whose filled track follows the --value custom property */
+.range-slider {
+  height: 20px;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.range-slider::-webkit-slider-runnable-track {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    #23a946 var(--value),
+    rgb(255 255 255 / 0.15) var(--value)
+  );
+}
+
+.range-slider::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+  margin-top: -5px;
+  appearance: none;
+  border-radius: 9999px;
+  background: #ffffff;
+  transition: transform 120ms ease;
+}
+
+.range-slider:hover::-webkit-slider-thumb,
+.range-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+.range-slider::-moz-range-track {
+  height: 2px;
+  background: rgb(255 255 255 / 0.15);
+}
+
+.range-slider::-moz-range-progress {
+  height: 2px;
+  background: #23a946;
+}
+
+.range-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: #ffffff;
+}
+
+.range-slider:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid #23a946;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .range-slider::-webkit-slider-thumb {
+    transition: none;
+  }
+}

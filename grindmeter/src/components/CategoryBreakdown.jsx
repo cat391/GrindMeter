@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import useScrollEdges from "./useScrollEdges";
 import { formatDuration } from "../utils/timerStats";
 
 // Longer than any row; the meter clips it to whole characters at every width
@@ -27,36 +27,6 @@ AsciiMeter.propTypes = {
   color: PropTypes.string.isRequired,
 };
 
-// Tracks whether more rows are hidden above or below the visible area
-function useScrollEdges(itemCount) {
-  const listRef = useRef(null);
-  const [edges, setEdges] = useState({ above: false, below: false });
-
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list) return undefined;
-    const update = () => {
-      const above = list.scrollTop > 1;
-      const below = list.scrollTop + list.clientHeight < list.scrollHeight - 1;
-      setEdges((current) =>
-        current.above === above && current.below === below
-          ? current
-          : { above, below }
-      );
-    };
-    update();
-    list.addEventListener("scroll", update, { passive: true });
-    const observer = new ResizeObserver(update);
-    observer.observe(list);
-    return () => {
-      list.removeEventListener("scroll", update);
-      observer.disconnect();
-    };
-  }, [itemCount]);
-
-  return { listRef, ...edges };
-}
-
 const FADE =
   "pointer-events-none absolute inset-x-0 z-10 h-12 from-customBlack-500 to-transparent transition-opacity duration-200 motion-reduce:transition-none lg:right-1";
 
@@ -66,7 +36,7 @@ export default function CategoryBreakdown({
   selected,
   onSelect,
 }) {
-  const { listRef, above, below } = useScrollEdges(categories.length);
+  const { scrollRef, above, below } = useScrollEdges(categories.length);
 
   return (
     <div className="flex min-w-0 flex-col border-t border-white/10 p-6 sm:p-8 lg:border-l lg:border-t-0">
@@ -96,7 +66,7 @@ export default function CategoryBreakdown({
             }`}
           />
           <ul
-            ref={listRef}
+            ref={scrollRef}
             className="quiet-scrollbar space-y-1 overscroll-contain lg:absolute lg:inset-0 lg:overflow-y-auto lg:[scrollbar-gutter:stable]"
           >
             {categories.map(({ name, seconds, share }) => {

@@ -1,27 +1,26 @@
-import "../App.css";
-import { usePresetContext } from "../context/PresetContext";
 import { convertToTimeStr } from "../utils/time";
 import PropTypes from "prop-types";
 
 // Component for Timer "Preset" Buttons
-export default function PresetButton({ onClick, id }) {
-  const { presets } = usePresetContext();
-
+export default function PresetButton({ seconds, active = false, onClick }) {
   return (
     <button
-      className="cursor-pointer transition-all bg-customBlack-300 text-white px-6 py-2 rounded-lg
-    border-customBlack-200
-    border-b-[4px] hover:brightness-105 hover:-translate-y-[0.5px] hover:border-b-[3px]
-    active:border-b-[2px] active:brightness-90 active:translate-y-[1px]
-    flex justify-center"
+      type="button"
+      aria-pressed={active}
       onClick={onClick}
+      className={`relative rounded px-1.5 py-2 text-sm tabular-nums transition-colors duration-200 after:absolute after:inset-x-1.5 after:bottom-0.5 after:h-px after:origin-center after:bg-customGreen-100 after:transition-transform after:duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-customGreen-100 motion-reduce:transition-none motion-reduce:after:transition-none ${
+        active
+          ? "text-white after:scale-x-100"
+          : "text-white/40 after:scale-x-0 hover:text-white/80"
+      }`}
     >
-      {convertToTimeStr(presets[id])}
+      {convertToTimeStr(seconds)}
     </button>
   );
 }
 
 PresetButton.propTypes = {
+  seconds: PropTypes.number.isRequired,
+  active: PropTypes.bool,
   onClick: PropTypes.func,
-  id: PropTypes.number,
 };

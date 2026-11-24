@@ -1,306 +1,153 @@
-import { IoSettingsOutline } from "react-icons/io5";
-import { IoIosLock } from "react-icons/io";
-import { usePresetContext } from "../context/PresetContext";
-import TimerInput from "./TimerInput";
-import VolumeSlider from "./VolumeSlider";
-import AddCategoryField from "./AddCategoryField";
-import { UserAuth } from "../context/AuthContext";
-import { ModifyCategoryField } from "./ModifyCategoryField";
-import DeleteCategoryField from "./DeleteCategoryField";
-import { useState } from "react";
-import { useAmbienceContext } from "../context/PresetContext";
+import { useEffect, useRef, useState } from "react";
+import { FiX } from "react-icons/fi";
 import PropTypes from "prop-types";
+import CategoryManager from "./CategoryManager";
+import SoundSettings from "./SoundSettings";
+import TimerInput from "./TimerInput";
+import useScrollEdges from "./useScrollEdges";
+
+const TABS = [
+  { id: "timer", label: "Timer" },
+  { id: "sound", label: "Sound" },
+  { id: "categories", label: "Categories" },
+];
+const FADE =
+  "pointer-events-none absolute inset-x-0 right-1 z-10 h-10 from-customBlack-500 to-transparent transition-opacity duration-200 motion-reduce:transition-none";
 
 function SettingsModal({ open, onClose }) {
-  const { currentPresetIndex, setCurrentPresetIndex } = usePresetContext();
-  const {
-    visualAmbience,
-    setVisualAmbience,
-    brownAmbience,
-    setBrownAmbience,
-    rainAmbience,
-    setRainAmbience,
-  } = useAmbienceContext();
-  const { user } = UserAuth();
-  const [ambienceIsOn, setAmbienceIsOn] = useState(false);
+  const dialogRef = useRef(null);
+  const tabRefs = useRef({});
+  const [activeTab, setActiveTab] = useState("timer");
+  const { scrollRef, above, below } = useScrollEdges(activeTab);
 
-  const handleClick = (e) => {
-    setCurrentPresetIndex(Number(e.target.id));
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+
+  const selectTab = (id) => {
+    setActiveTab(id);
+    scrollRef.current.scrollTop = 0;
   };
 
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleChange = (e) => {
-    switch (e.target.name) {
-      case "ambienceOn":
-        setAmbienceIsOn(e.target.checked);
-        if (!e.target.checked) {
-          setVisualAmbience(false);
-          setBrownAmbience(false);
-          setRainAmbience(false);
-        }
-        break;
-      case "visualChange":
-        setVisualAmbience(e.target.checked);
-        break;
-      case "brownChange":
-        setBrownAmbience(e.target.checked);
-        break;
-      case "rainChange":
-        setRainAmbience(e.target.checked);
-        break;
-      default:
-        break;
-    }
+  const handleTabKey = (event, index) => {
+    const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+    if (!step) return;
+    event.preventDefault();
+    const next = TABS[(index + step + TABS.length) % TABS.length];
+    selectTab(next.id);
+    tabRefs.current[next.id].focus();
   };
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex justify-center items-center transition-colors ${
-        open ? "visible bg-black/40" : "invisible"
-      }`}
-      onClick={onClose}
+    <dialog
+      ref={dialogRef}
+      aria-labelledby="settings-title"
+      onClose={onClose}
+      onClick={(event) => {
+        if (event.target === dialogRef.current) dialogRef.current.close();
+      }}
+      className="m-auto h-[min(88dvh,32.5rem)] w-[min(92vw,30rem)] overflow-hidden rounded-xl border border-white/10 bg-customBlack-500 p-0 text-white shadow-2xl shadow-black/60 backdrop:bg-black/70"
     >
-      <div
-        className="bg-customBlack-100 rounded-xl shadow-md border-2 border-customGreen-300 w-80 max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-5 pb-2">
-          <div className="flex justify-center mb-2">
-            <IoSettingsOutline size={30} className="text-customGreen-100" />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-5 pb-2 custom-scrollbar">
-          <div className="space-y-5">
-            <section>
-              <h2 className="text-customGreen-100 font-medium mb-3">
-                Custom Presets
-              </h2>
-
-              <TimerInput />
-
-              <div className="flex justify-center gap-2 my-3">
-                {[0, 1, 2].map((index) => (
-                  <button
-                    key={index}
-                    id={index}
-                    className={`
-                      border-2 border-customGreen-300 text-customGreen-100 text-sm py-1 px-3 rounded-md
-                      transition duration-100 ease-in-out transform
-                      ${
-                        currentPresetIndex !== index
-                          ? "opacity-45 hover:opacity-75"
-                          : "opacity-100"
-                      }
-                    `}
-                    onClick={handleClick}
-                  >
-                    Preset {index + 1}
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="text-customGreen-100 font-medium mb-2">
-                Ringtone
-              </h2>
-              <VolumeSlider />
-            </section>
-            <section className="mb-5">
-              <div className="flex justify-between items-center w-full">
-                <h2 className="text-customGreen-100 font-medium">Ambience</h2>
-                {open ? (
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      name="ambienceOn"
-                      onChange={handleChange}
-                      checked={ambienceIsOn}
-                    />
-                    <div
-                      className="
-        bg-customBlack-100 rounded-full w-8 h-4 ring-2 ring-customGreen-300 duration-300
-        after:bg-customGreen-300 after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:rounded-full after:duration-300
-        peer-checked:after:translate-x-4 peer-checked:after:bg-customGreen-100 peer-checked:ring-customGreen-100
-        hover:after:scale-95
-      "
-                    ></div>
-                  </label>
-                ) : null}
-              </div>
-
-              {ambienceIsOn ? (
-                <div className="text-customGreen-200 text-sm space-y-3 mt-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium">Visual Change</h3>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        name="visualChange"
-                        type="checkbox"
-                        className="sr-only peer"
-                        onChange={handleChange}
-                        checked={visualAmbience}
-                      />
-                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
-                        {/* Custom checkmark */}
-                        <svg
-                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium">Brown Noise</h3>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        name="brownChange"
-                        type="checkbox"
-                        className="sr-only peer"
-                        onChange={handleChange}
-                        checked={brownAmbience}
-                      />
-                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
-                        <svg
-                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </label>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-medium">Rain Noise</h3>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        name="rainChange"
-                        type="checkbox"
-                        className="sr-only peer"
-                        onChange={handleChange}
-                        checked={rainAmbience}
-                      />
-                      <div className="w-4 h-4 border-2 border-customGreen-300 rounded peer-checked:bg-customGreen-100 peer-checked:border-customGreen-100 flex items-center justify-center transition-colors duration-200">
-                        <svg
-                          className="w-3 h-3 text-customBlack-100 opacity-0 peer-checked:opacity-100"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              ) : (
-                <div></div>
-              )}
-            </section>
-
-            <section>
-              <h2 className="text-customGreen-100 font-medium mb-3">
-                {user ? (
-                  "Work Categories"
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <span>Work Categories</span>
-                    <IoIosLock className="w-5 h-5" />
-                  </div>
-                )}
-              </h2>
-
-              {user ? (
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-customGreen-200 font-medium text-sm mb-2">
-                      Add Category
-                    </h3>
-                    <div className="flex justify-center">
-                      <AddCategoryField />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-customGreen-200 font-medium text-sm opacity-70 mb-2">
-                      Modify Category
-                    </h3>
-                    <div>
-                      <ModifyCategoryField />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-customGreen-200 font-medium text-sm opacity-70 mb-2">
-                      Delete Category
-                    </h3>
-                    <div>
-                      <DeleteCategoryField />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-customBlack-200/50 p-3 rounded-md">
-                  <p className="text-customGreen-200 text-center text-sm">
-                    Must be logged in to use this feature.
-                  </p>
-                </div>
-              )}
-            </section>
-          </div>
-        </div>
-
-        <div className="px-5 pb-5 pt-2 mt-auto">
-          <hr className="border-customGreen-300/20 mb-4" />
+      <div className="flex h-full flex-col">
+        <header className="flex items-center justify-between gap-4 px-6 pb-4 pt-5">
+          <h2 id="settings-title" className="text-2xl font-semibold">
+            Settings
+          </h2>
           <button
-            onClick={handleClose}
-            className="w-full border-2 border-customGreen-300 text-customGreen-200 p-2 rounded-md 
-                     transition duration-300 ease-in-out transform hover:text-customGreen-100 hover:bg-customGreen-300/10"
+            type="button"
+            aria-label="Close"
+            onClick={() => dialogRef.current.close()}
+            className="-mr-1 grid h-8 w-8 place-items-center rounded text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white"
           >
-            Close
+            <FiX size={18} />
           </button>
+        </header>
+
+        <div
+          role="tablist"
+          aria-label="Settings sections"
+          className="flex gap-5 border-b border-white/10 px-6 text-sm font-medium"
+        >
+          {TABS.map(({ id, label }, index) => {
+            const selected = activeTab === id;
+            return (
+              <button
+                key={id}
+                ref={(element) => {
+                  tabRefs.current[id] = element;
+                }}
+                type="button"
+                role="tab"
+                id={`settings-tab-${id}`}
+                aria-selected={selected}
+                aria-controls={`settings-panel-${id}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => selectTab(id)}
+                onKeyDown={(event) => handleTabKey(event, index)}
+                className={`-mb-px border-b pb-2.5 transition-colors ${
+                  selected
+                    ? "border-customGreen-100 text-customGreen-100"
+                    : "border-transparent text-white/50 hover:text-white"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative min-h-0 flex-1">
+          <div
+            aria-hidden="true"
+            data-fade="top"
+            className={`${FADE} top-0 bg-gradient-to-b ${
+              above ? "opacity-100" : "opacity-0"
+            }`}
+          />
+          <div
+            ref={scrollRef}
+            className="quiet-scrollbar h-full overflow-y-auto overscroll-contain py-5 pl-6 pr-5 [scrollbar-gutter:stable]"
+          >
+            <div>
+              {/* Panels stay mounted so unsaved edits survive switching tabs */}
+              <div
+                role="tabpanel"
+                id="settings-panel-timer"
+                aria-labelledby="settings-tab-timer"
+                hidden={activeTab !== "timer"}
+              >
+                <TimerInput />
+              </div>
+              <div
+                role="tabpanel"
+                id="settings-panel-sound"
+                aria-labelledby="settings-tab-sound"
+                hidden={activeTab !== "sound"}
+              >
+                <SoundSettings />
+              </div>
+              <div
+                role="tabpanel"
+                id="settings-panel-categories"
+                aria-labelledby="settings-tab-categories"
+                hidden={activeTab !== "categories"}
+              >
+                <CategoryManager onNavigate={() => dialogRef.current.close()} />
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            data-fade="bottom"
+            className={`${FADE} bottom-0 bg-gradient-to-t ${
+              below ? "opacity-100" : "opacity-0"
+            }`}
+          />
         </div>
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(26, 95, 73, 0.5);
-          border-radius: 20px;
-        }
-      `}</style>
-    </div>
+    </dialog>
   );
 }
 

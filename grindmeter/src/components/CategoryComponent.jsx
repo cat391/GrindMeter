@@ -1,5 +1,5 @@
+import { FiChevronDown } from "react-icons/fi";
 import { useCategoryContext } from "../context/CategoryContext";
-import { useState } from "react";
 import { UserAuth } from "../context/AuthContext";
 
 export default function CategoryComponent() {
@@ -7,29 +7,28 @@ export default function CategoryComponent() {
     useCategoryContext();
   const { user } = UserAuth();
 
-  const [selectedValue, setSelectedValue] = useState(currentCategory);
+  if (!user) return null;
 
-  const handleDropdownChange = (e) => {
-    setSelectedValue(e.target.value);
-    setCurrentCategory(e.target.value);
-  };
-
+  // The real select is invisible on top, so the label can hug the chosen name
   return (
-    <>
-      {user && (
-        <select
-          className="bg-customBlack-300 m-1 px-3 py-1 outline-none w-28 text-xs text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#70737c] border-[#494949] pr-10 appearance-none"
-          value={selectedValue}
-          onChange={handleDropdownChange}
-        >
-          <option>None</option>
-          {categories.slice(1).map((category, index) => (
-            <option key={index} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      )}
-    </>
+    <label className="relative inline-flex max-w-[min(70vw,18rem)] cursor-pointer items-center gap-1.5 rounded px-2 py-1 text-sm text-white/50 transition-colors hover:text-white [&:has(select:focus-visible)]:text-white [&:has(select:focus-visible)]:outline [&:has(select:focus-visible)]:outline-2 [&:has(select:focus-visible)]:outline-customGreen-100">
+      <span className="truncate">
+        {currentCategory === "None" ? "No category" : currentCategory}
+      </span>
+      <FiChevronDown aria-hidden="true" size={14} className="shrink-0" />
+      <select
+        aria-label="Category"
+        value={currentCategory}
+        onChange={(event) => setCurrentCategory(event.target.value)}
+        className="absolute inset-0 w-full cursor-pointer appearance-none opacity-0 [color-scheme:dark]"
+      >
+        <option value="None">No category</option>
+        {categories.slice(1).map((category, index) => (
+          <option key={index} value={category}>
+            {category}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

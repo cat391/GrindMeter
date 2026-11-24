@@ -1,45 +1,34 @@
-import { useState } from "react";
+import { FiVolume, FiVolume1, FiVolume2, FiVolumeX } from "react-icons/fi";
 import { useVolumeContext } from "../context/PresetContext";
-import { IoMdVolumeHigh, IoMdVolumeLow, IoMdVolumeMute } from "react-icons/io";
+
+function volumeIcon(volume) {
+  if (volume === 0) return FiVolumeX;
+  if (volume < 34) return FiVolume;
+  return volume < 67 ? FiVolume1 : FiVolume2;
+}
 
 function VolumeSlider() {
   const { volume, setVolume } = useVolumeContext();
-
-  const [isGrabbing, setIsGrabbing] = useState(false);
-
-  const handleVolumeChange = (e) => {
-    setVolume(Number(e.target.value));
-  };
+  const Icon = volumeIcon(volume);
 
   return (
-    <div className="flex items-center justify-center space-x-2">
-      {(() => {
-        if (volume > 50) {
-          return <IoMdVolumeHigh className="text-customGreen-100" />;
-        } else if (volume >= 1) {
-          return <IoMdVolumeLow className="text-customGreen-100" />;
-        } else {
-          return <IoMdVolumeMute className="text-customGreen-100" />;
-        }
-      })()}
-
+    <div className="flex items-center gap-3">
+      <Icon aria-hidden="true" size={16} className="shrink-0 text-white/60" />
       <input
         id="volume-slider"
+        aria-label="Ringtone volume"
         type="range"
         min="0"
         max="100"
         step="1"
         value={volume}
-        onChange={handleVolumeChange}
-        className={
-          isGrabbing
-            ? "w-1/2 h-9 accent-customGreen-100 cursor-grabbing"
-            : "w-1/2 h-9 accent-customGreen-100 cursor-grab"
-        }
-        onMouseDown={() => setIsGrabbing(true)}
-        onMouseUp={() => setIsGrabbing(false)}
-        onMouseLeave={() => setIsGrabbing(false)}
+        style={{ "--value": `${volume}%` }}
+        onChange={(event) => setVolume(Number(event.target.value))}
+        className="range-slider min-w-0 flex-1"
       />
+      <span className="w-10 shrink-0 text-right text-xs tabular-nums text-white/60">
+        {volume}%
+      </span>
     </div>
   );
 }

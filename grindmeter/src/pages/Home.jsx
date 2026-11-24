@@ -1,4 +1,4 @@
-import { createRef, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
@@ -8,9 +8,13 @@ import { usePresetContext } from "../context/PresetContext";
 import CategoryComponent from "../components/CategoryComponent";
 import { useAmbienceContext } from "../context/PresetContext";
 import { useCategoryContext } from "../context/CategoryContext";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import "../transition.css";
 import { UserAuth } from "../context/AuthContext";
+
+// Hidden items keep their space, so the timer never moves when Focus view starts
+const fadeWhen = (visible) =>
+  `transition-[opacity,visibility] duration-300 motion-reduce:transition-none ${
+    visible ? "visible opacity-100" : "invisible opacity-0"
+  }`;
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
@@ -24,38 +28,7 @@ export default function Home() {
   const { currentCategory } = useCategoryContext();
   const { user } = UserAuth();
   const { openSettings } = useOutletContext();
-  // Stuff for CSS Transition
-  const key = isOn && visualAmbience ? "AMB" : "CAT";
-  // Entering and exiting views animate at once, so each needs its own ref
-  const categoryRefs = useRef({ AMB: createRef(), CAT: createRef() });
-  const presetRefs = useRef({ AMB: createRef(), CAT: createRef() });
-  const content1 =
-    isOn && visualAmbience && user ? (
-      <div className="text-white font-bold">{currentCategory}</div>
-    ) : (
-      <div className="">
-        <CategoryComponent />
-      </div>
-    );
-  const content2 =
-    isOn && visualAmbience ? (
-      <div>
-        <div className="flex space-x-4 justify-center items-center h-50"></div>
-      </div>
-    ) : (
-      <div className="flex space-x-4 justify-center items-center h-50">
-        {[0, 1, 2].map((id) => {
-          return (
-            <PresetButton
-              presets={presets}
-              key={id}
-              id={id}
-              onClick={() => handleTimerChange(id)}
-            />
-          );
-        })}
-      </div>
-    );
+  const focused = isOn && visualAmbience;
 
   const handleTimerChange = (id) => {
     if (id !== displayedTime || customSeconds !== null) {
@@ -105,7 +78,7 @@ export default function Home() {
     // Update ambience context to see if timer is running
     setTimerRunning(isOn);
     if (visualAmbience && isOn) {
-      const cls = "bg-customBlack-500";
+      const cls = "bg-black";
       document.body.classList.add(cls);
       return () => document.body.classList.remove(cls);
     } else {
@@ -115,9 +88,12 @@ export default function Home() {
     }
   }, [visualAmbience, isOn, setTimerRunning]);
 
+  // Leaving this page stops the timer, so Focus view styling must end with it
+  useEffect(() => () => setTimerRunning(false), [setTimerRunning]);
+
   return (
-    <div className="pt-14">
-      <h2>
+    <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-14">
+      <h2 className="w-full">
         <Timer
           duration={customSeconds ?? presets[displayedTime]}
           isRunning={isOn}
@@ -126,82 +102,65 @@ export default function Home() {
         />
       </h2>
 
-      <div className="relative m-7 h-16">
-        <TransitionGroup component={null}>
-          <CSSTransition
-            key={key}
-            nodeRef={categoryRefs.current[key]}
-            timeout={2000}
-            classNames="fade"
-            mountOnEnter
-            unmountOnExit
-          >
-            <div
-              ref={categoryRefs.current[key]}
-              className="absolute inset-0 flex justify-center items-center"
-            >
-              {content1}
-            </div>
-          </CSSTransition>
-        </TransitionGroup>
+      <div className="mt-6 grid h-8 place-items-center">
+        <div className={`[grid-area:1/1] ${fadeWhen(!focused)}`}>
+          <CategoryComponent />
+        </div>
+        <p
+          className={`max-w-[min(70vw,18rem)] truncate text-sm text-white/50 [grid-area:1/1] ${fadeWhen(
+            focused
+          )}`}
+        >
+          {user && currentCategory !== "None" ? currentCategory : ""}
+        </p>
       </div>
 
-      <div>
-        <TransitionGroup component={null}>
-          <CSSTransition
-            key={key}
-            nodeRef={presetRefs.current[key]}
-            timeout={2000}
-            classNames="preset-collapse"
-            mountOnEnter
-            unmountOnExit
-          >
-            <div
-              ref={presetRefs.current[key]}
-              className="flex justify-center items-center"
-            >
-              {content2}
-            </div>
-          </CSSTransition>
-        </TransitionGroup>
+      <div className={`mt-3 flex items-center justify-center gap-5 ${fadeWhen(!focused)}`}>
+        {presets.map((seconds, id) => (
+          <PresetButton
+            key={id}
+            seconds={seconds}
+            active={id === displayedTime && customSeconds === null}
+            onClick={() => handleTimerChange(id)}
+          />
+        ))}
       </div>
 
-      <div className="flex space-x-4 justify-center items-center h-40">
-        <button
-          className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
+      <div className="mt-8 flex h-16 items-center justify-center">
+        {/* The gear sits outside the flow so pause and reset stay centered */}
+        <div className="relative flex items-center space-x-4">
+          <button
+            className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
     border-customGreen-200
     border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
     active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ${
-      isOn && visualAmbience ? "text-2xl" : "text-3xl"
+      focused ? "text-2xl" : "text-3xl"
     }`}
-          onClick={toggleTimer}
-        >
-          {isOn ? <BiPause /> : <BiPlay />}
-        </button>
-        <button
-          className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
+            onClick={toggleTimer}
+          >
+            {isOn ? <BiPause /> : <BiPlay />}
+          </button>
+          <button
+            className={`cursor-pointer transition-all bg-customGreen-100 text-white px-6 py-2 rounded-lg
     border-customGreen-200
     border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
     active:border-b-[2px] active:brightness-90 active:translate-y-[2px]  ${
-      isOn && visualAmbience ? "text-2xl" : "text-3xl"
+      focused ? "text-2xl" : "text-3xl"
     }`}
-          onClick={resetTimer}
-        >
-          <BiReset />
-        </button>
-        <button
-          aria-label="Settings"
-          title="Settings"
-          className={`cursor-pointer transition-all bg-customBlack-300 text-white px-6 py-2 rounded-lg
-    border-customBlack-200
-    border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-    active:border-b-[2px] active:brightness-90 active:translate-y-[2px] ${
-      isOn && visualAmbience ? "text-2xl" : "text-3xl"
-    }`}
-          onClick={openSettings}
-        >
-          <BiCog />
-        </button>
+            onClick={resetTimer}
+          >
+            <BiReset />
+          </button>
+          <button
+            type="button"
+            aria-label="Settings"
+            title="Settings"
+            onClick={openSettings}
+            className="absolute left-full top-1/2 !ml-3 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-white/35 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-customGreen-100"
+          >
+            <BiCog size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );
