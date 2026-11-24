@@ -3,7 +3,6 @@ import "../App.css";
 import { useVolumeContext } from "../context/PresetContext";
 import { useRef, useEffect } from "react";
 import { useAmbienceContext } from "../context/PresetContext";
-import YoutubeAudioPlayer from "./YoutubeAudioPlayer";
 import TimeDisplay from "./TimeDisplay";
 import PropTypes from "prop-types";
 
@@ -14,8 +13,7 @@ export default function Timer({
   onDurationChange,
 }) {
   const { volume } = useVolumeContext();
-  const { visualAmbience, timerRunning, brownAmbience, rainAmbience } =
-    useAmbienceContext();
+  const { visualAmbience, timerRunning } = useAmbienceContext();
   const { state, totalSeconds } = useTimer(duration, isRunning, reset);
   const audioRef = useRef(null);
 
@@ -50,28 +48,14 @@ export default function Timer({
     audioRef.current.volume = volume / 100;
   }, [volume]);
 
-  const glowClass = !(timerRunning && visualAmbience)
-    ? ""
-    : state
-    ? "[text-shadow:0_0_14px_rgb(255_0_0_/_0.5),0_0_36px_rgb(255_0_0_/_0.2)]"
-    : "[text-shadow:0_0_14px_rgb(255_255_255_/_0.35),0_0_36px_rgb(255_255_255_/_0.12)]";
-
   return (
     <div>
-      {timerRunning && brownAmbience ? (
-        <YoutubeAudioPlayer videoID="RqzGzwTY-6w" />
-      ) : null}
-
-      {timerRunning && rainAmbience ? (
-        <YoutubeAudioPlayer videoID="yIQd2Ya0Ziw" />
-      ) : null}
-
       <audio ref={audioRef} src="/sounds/betav2-ringtone.wav" loop />
       <TimeDisplay
         seconds={totalSeconds}
         isRunning={isRunning}
         finished={state}
-        glowClass={glowClass}
+        glowing={timerRunning && visualAmbience}
         onCommit={onDurationChange}
       />
     </div>

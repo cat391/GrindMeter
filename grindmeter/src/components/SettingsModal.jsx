@@ -3,7 +3,7 @@ import { FiX } from "react-icons/fi";
 import PropTypes from "prop-types";
 import CategoryManager from "./CategoryManager";
 import SoundSettings from "./SoundSettings";
-import TimerInput from "./TimerInput";
+import TimerSettings from "./TimerSettings";
 import useScrollEdges from "./useScrollEdges";
 
 const TABS = [
@@ -118,7 +118,7 @@ function SettingsModal({ open, onClose }) {
                 aria-labelledby="settings-tab-timer"
                 hidden={activeTab !== "timer"}
               >
-                <TimerInput />
+                <TimerSettings />
               </div>
               <div
                 role="tabpanel"

@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
+import AmbienceAudio from "../components/AmbienceAudio";
+import Stopwatch from "../components/Stopwatch";
 import Timer from "../components/Timer";
 import PresetButton from "../components/PresetButton";
 import "../App.css";
@@ -18,7 +20,13 @@ const fadeWhen = (visible) =>
 
 export default function Home() {
   const [isOn, setIsOn] = useState(false);
-  const { presets } = usePresetContext();
+  const { presets, stopwatchMode } = usePresetContext();
+  // Switching modes ends the current run; each clock saves its time as it closes
+  const [loadedMode, setLoadedMode] = useState(stopwatchMode);
+  if (loadedMode !== stopwatchMode) {
+    setLoadedMode(stopwatchMode);
+    setIsOn(false);
+  }
   const [displayedTime, setDisplayedTime] = useState(0);
   // A time set directly on the timer; takes priority over the selected preset
   const [customSeconds, setCustomSeconds] = useState(null);
@@ -46,6 +54,7 @@ export default function Home() {
   };
 
   const toggleTimer = () => setIsOn((prev) => (prev ? false : true));
+  const stopTimer = useCallback(() => setIsOn(false), []);
 
   // Always returns to the selected preset, discarding any edited time
   const resetTimer = () => {
@@ -94,12 +103,17 @@ export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-14">
       <h2 className="w-full">
-        <Timer
-          duration={customSeconds ?? presets[displayedTime]}
-          isRunning={isOn}
-          reset={shouldReset}
-          onDurationChange={handleCustomTime}
-        />
+        <AmbienceAudio />
+        {stopwatchMode ? (
+          <Stopwatch isRunning={isOn} reset={shouldReset} onLimit={stopTimer} />
+        ) : (
+          <Timer
+            duration={customSeconds ?? presets[displayedTime]}
+            isRunning={isOn}
+            reset={shouldReset}
+            onDurationChange={handleCustomTime}
+          />
+        )}
       </h2>
 
       <div className="mt-6 grid h-8 place-items-center">
@@ -115,16 +129,18 @@ export default function Home() {
         </p>
       </div>
 
-      <div className={`mt-3 flex items-center justify-center gap-5 ${fadeWhen(!focused)}`}>
-        {presets.map((seconds, id) => (
-          <PresetButton
-            key={id}
-            seconds={seconds}
-            active={id === displayedTime && customSeconds === null}
-            onClick={() => handleTimerChange(id)}
-          />
-        ))}
-      </div>
+      {!stopwatchMode && (
+        <div className={`mt-3 flex items-center justify-center gap-5 ${fadeWhen(!focused)}`}>
+          {presets.map((seconds, id) => (
+            <PresetButton
+              key={id}
+              seconds={seconds}
+              active={id === displayedTime && customSeconds === null}
+              onClick={() => handleTimerChange(id)}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="mt-8 flex h-16 items-center justify-center">
         {/* The gear sits outside the flow so pause and reset stay centered */}

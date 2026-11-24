@@ -30,6 +30,11 @@ const EXIT_MOTION =
   "transition-[width,opacity] duration-[260ms,90ms] delay-[60ms,0ms]";
 const MOTION_MS = 340;
 
+const RUNNING_GLOW =
+  "[text-shadow:0_0_14px_rgb(255_255_255_/_0.35),0_0_36px_rgb(255_255_255_/_0.12)]";
+const FINISHED_GLOW =
+  "[text-shadow:0_0_14px_rgb(255_0_0_/_0.5),0_0_36px_rgb(255_0_0_/_0.2)]";
+
 // A character slot that appears instantly unless `animate` is set.
 function Reveal({ shown, width, animate, children }) {
   const motion = !animate ? "" : shown ? ENTER_MOTION : EXIT_MOTION;
@@ -55,11 +60,13 @@ Reveal.propTypes = {
 };
 
 // The countdown and its editor are one element, so digits never jump on click.
+// Without `onCommit` the time is read-only, as it is for the stopwatch.
 export default function TimeDisplay({
+  label = "Timer",
   seconds,
   isRunning,
-  finished,
-  glowClass = "",
+  finished = false,
+  glowing = false,
   onCommit,
 }) {
   const [draft, setDraft] = useState(null);
@@ -218,7 +225,8 @@ export default function TimeDisplay({
     [true, true],
   ];
   const baseColor = finished ? "text-red-700" : "text-customBlack-400";
-  const canHover = !isEditing && !isRunning && !finished;
+  const canHover = Boolean(onCommit) && !isEditing && !isRunning && !finished;
+  const glowClass = !glowing ? "" : finished ? FINISHED_GLOW : RUNNING_GLOW;
   const timeStr = convertToTimeStr(seconds);
 
   return (
@@ -320,7 +328,12 @@ export default function TimeDisplay({
           );
         })}
 
-        {!isEditing && (
+        {!onCommit && (
+          <span role="timer" className="sr-only">
+            {`${label} ${timeStr}`}
+          </span>
+        )}
+        {!isEditing && onCommit && (
           <button
             type="button"
             disabled={isRunning}
@@ -346,9 +359,10 @@ export default function TimeDisplay({
 }
 
 TimeDisplay.propTypes = {
+  label: PropTypes.string,
   seconds: PropTypes.number.isRequired,
   isRunning: PropTypes.bool,
   finished: PropTypes.bool,
-  glowClass: PropTypes.string,
-  onCommit: PropTypes.func.isRequired,
+  glowing: PropTypes.bool,
+  onCommit: PropTypes.func,
 };

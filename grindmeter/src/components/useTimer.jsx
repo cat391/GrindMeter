@@ -1,54 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import db from "../firebase-config";
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  where,
-  query,
-  getDocs,
-  increment,
-} from "firebase/firestore";
 import { useCategoryContext } from "../context/CategoryContext";
 import { UserAuth } from "../context/AuthContext";
-import { formatLocalDate } from "../utils/date";
-
-async function addTimerData(duration, currentCategory, user) {
-  if (!user || !user.email) return; // Add additional check for email
-
-  try {
-    const currentDate = formatLocalDate();
-    const timerUseRef = collection(db, `timerData/${user.email}/timerUse`);
-
-    // Query for existing document with same category and date
-    const q = query(
-      timerUseRef,
-      where("category", "==", currentCategory),
-      where("date", "==", currentDate)
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      // Document exists - atomically add to duration so concurrent writes don't clobber each other
-      const docRef = querySnapshot.docs[0].ref;
-      await updateDoc(docRef, {
-        duration: increment(Math.round(duration)),
-      });
-      console.log("Document updated with ID: ", docRef.id);
-    } else {
-      // No matching document - create new one
-      const docRef = await addDoc(timerUseRef, {
-        duration: Math.round(duration),
-        category: currentCategory,
-        date: currentDate,
-      });
-      console.log("New document created with ID: ", docRef.id);
-    }
-  } catch (error) {
-    console.error("Error in addTimerData: ", error);
-  }
-}
+import { recordTime } from "../utils/timerStore";
 
 // `duration` is in seconds and takes effect when `reset` increases.
 export default function useTimer(duration, isRunning, reset) {
@@ -61,6 +14,7 @@ export default function useTimer(duration, isRunning, reset) {
   const prevResetVal = useRef(reset);
   const skipPauseRecordRef = useRef(false);
   const finishedRef = useRef(false);
+  const runningRef = useRef(false);
 
   const heartbeatRef = useRef(null);
   const lastHeartbeatRef = useRef(null);
@@ -101,7 +55,7 @@ export default function useTimer(duration, isRunning, reset) {
         lastHeartbeatRef.current = now;
         remainingBudgetRef.current -= capped;
         if (capped > 1) {
-          addTimerData(capped, categoryRef.current, userRef.current);
+          recordTime(capped, categoryRef.current, userRef.current);
         }
       }
       // Stop ticking now: the running state turns off a render later, and a
@@ -119,6 +73,7 @@ export default function useTimer(duration, isRunning, reset) {
   }, [duration, reset, running]);
 
   useEffect(() => {
+    runningRef.current = running;
     if (running) {
       skipPauseRecordRef.current = false;
       finishedRef.current = false;
@@ -147,7 +102,7 @@ export default function useTimer(duration, isRunning, reset) {
           finishedRef.current = true;
 
           if (capped > 0) {
-            addTimerData(capped, categoryRef.current, userRef.current);
+            recordTime(capped, categoryRef.current, userRef.current);
           }
         }
       }, 100);
@@ -160,7 +115,7 @@ export default function useTimer(duration, isRunning, reset) {
           lastHeartbeatRef.current = now;
           remainingBudgetRef.current -= capped;
           if (capped > 0) {
-            addTimerData(capped, categoryRef.current, userRef.current);
+            recordTime(capped, categoryRef.current, userRef.current);
           }
         }
       }, 1000);
@@ -178,7 +133,7 @@ export default function useTimer(duration, isRunning, reset) {
 
           // Only record if there's meaningful duration (>1 second)
           if (capped > 1) {
-            addTimerData(capped, categoryRef.current, userRef.current);
+            recordTime(capped, categoryRef.current, userRef.current);
           }
         }
 
@@ -196,6 +151,20 @@ export default function useTimer(duration, isRunning, reset) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 'time' is read only on the running→false transition; adding it would recreate the interval every tick
   }, [running]);
+
+  // Leaving the page or switching to the stopwatch ends a run with no pause,
+  // so the time since the last save is recorded here.
+  useEffect(
+    () => () => {
+      if (!runningRef.current || finishedRef.current) return;
+      const sinceLast = (Date.now() - lastHeartbeatRef.current) / 1000;
+      const capped = Math.min(sinceLast, remainingBudgetRef.current);
+      if (capped > 1) {
+        recordTime(capped, categoryRef.current, userRef.current);
+      }
+    },
+    []
+  );
 
   const finished = time === 0;
 

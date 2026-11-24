@@ -18,11 +18,35 @@ export function useAmbienceContext() {
   return useContext(AmbienceContext);
 }
 
+const STOPWATCH_KEY = "grindmeter.stopwatch";
+
+// Storage can be unavailable in private windows, where the mode just won't persist
+const readStopwatchMode = () => {
+  try {
+    return localStorage.getItem(STOPWATCH_KEY) === "on";
+  } catch {
+    return false;
+  }
+};
+
+const writeStopwatchMode = (enabled) => {
+  try {
+    localStorage.setItem(STOPWATCH_KEY, enabled ? "on" : "off");
+  } catch {
+    // The choice still applies until the page reloads
+  }
+};
+
 export function PresetProvider({ children }) {
   // Preset Context
   const [presets, setPresets] = useState([60 * 10, 60 * 60, 60 * 90]);
   const [currentPresetIndex, setCurrentPresetIndex] = useState(0);
   const currentPreset = presets[currentPresetIndex];
+  const [stopwatchMode, setStopwatchEnabled] = useState(readStopwatchMode);
+  const setStopwatchMode = (enabled) => {
+    setStopwatchEnabled(enabled);
+    writeStopwatchMode(enabled);
+  };
   // Volume Context
   const [volume, setVolume] = useState(100);
   // Ambience Context
@@ -39,6 +63,8 @@ export function PresetProvider({ children }) {
         currentPreset,
         currentPresetIndex,
         setCurrentPresetIndex,
+        stopwatchMode,
+        setStopwatchMode,
       }}
     >
       <VolumeContext.Provider value={{ volume, setVolume }}>
