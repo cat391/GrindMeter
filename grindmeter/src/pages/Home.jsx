@@ -31,6 +31,7 @@ export default function Home() {
   // A time set directly on the timer; takes priority over the selected preset
   const [customSeconds, setCustomSeconds] = useState(null);
   const [shouldReset, setShouldReset] = useState(0);
+  const [timerFinished, setTimerFinished] = useState(false);
   const oldPresets = useRef(presets);
   const { visualAmbience, setTimerRunning } = useAmbienceContext();
   const { currentCategory } = useCategoryContext();
@@ -53,7 +54,6 @@ export default function Home() {
     setIsOn(false);
   };
 
-  const toggleTimer = () => setIsOn((prev) => (prev ? false : true));
   const stopTimer = useCallback(() => setIsOn(false), []);
 
   // Always returns to the selected preset, discarding any edited time
@@ -61,6 +61,15 @@ export default function Home() {
     setCustomSeconds(null);
     setShouldReset((prev) => prev + 1);
     setIsOn(false);
+  };
+
+  // Once the alarm rings, the play/pause button silences it by starting over
+  const toggleTimer = () => {
+    if (timerFinished && !stopwatchMode) {
+      resetTimer();
+    } else {
+      setIsOn((prev) => !prev);
+    }
   };
 
   useEffect(() => {
@@ -112,6 +121,7 @@ export default function Home() {
             isRunning={isOn}
             reset={shouldReset}
             onDurationChange={handleCustomTime}
+            onFinishedChange={setTimerFinished}
           />
         )}
       </h2>

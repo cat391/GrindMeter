@@ -11,6 +11,7 @@ export default function Timer({
   isRunning,
   reset,
   onDurationChange,
+  onFinishedChange,
 }) {
   const { volume } = useVolumeContext();
   const { visualAmbience, timerRunning } = useAmbienceContext();
@@ -43,6 +44,10 @@ export default function Timer({
     };
   }, [state]);
 
+  useEffect(() => {
+    onFinishedChange(state);
+  }, [state, onFinishedChange]);
+
   // Changes volume if user changes it in settings
   useEffect(() => {
     audioRef.current.volume = volume / 100;
@@ -67,4 +72,5 @@ Timer.propTypes = {
   isRunning: PropTypes.bool,
   reset: PropTypes.number,
   onDurationChange: PropTypes.func.isRequired,
+  onFinishedChange: PropTypes.func.isRequired,
 };

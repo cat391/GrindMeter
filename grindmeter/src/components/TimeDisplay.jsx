@@ -31,7 +31,7 @@ const EXIT_MOTION =
 const MOTION_MS = 340;
 
 const RUNNING_GLOW =
-  "[text-shadow:0_0_14px_rgb(255_255_255_/_0.35),0_0_36px_rgb(255_255_255_/_0.12)]";
+  "[text-shadow:0_0_12px_rgb(255_255_255_/_0.16),0_0_32px_rgb(255_255_255_/_0.05)]";
 const FINISHED_GLOW =
   "[text-shadow:0_0_14px_rgb(255_0_0_/_0.5),0_0_36px_rgb(255_0_0_/_0.2)]";
 
